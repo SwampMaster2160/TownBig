@@ -1,4 +1,4 @@
-#include "SFML/Graphics.hpp"
+#include "main.hpp"
 
 int WinMain()
 {
@@ -19,17 +19,6 @@ int WinMain()
         }
 
         window.clear();
-
-        sf::CircleShape shape(500.f);
-        shape.setPointCount(100);
-        shape.setPosition(0, 0);
-        shape.setFillColor(sf::Color::Green);
-        window.draw(shape);
-
-        shape = sf::CircleShape(50.f);
-        shape.setPosition(10, 10);
-        shape.setFillColor(sf::Color::Red);
-        window.draw(shape);
 
         sf::RectangleShape rShape;
         rShape.setPosition(20, time % 100);

@@ -21,6 +21,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="composites.hpp" />
+    <ClInclude Include="main.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{c0118b7f-ca21-4a6b-a79c-f3a5b60ef851}</ProjectGuid>
