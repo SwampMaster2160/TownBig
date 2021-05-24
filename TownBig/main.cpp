@@ -1,11 +1,19 @@
 #include "main.hpp"
+#include <iostream>
 
-int WinMain()
+const Version currentVersion = {0, 0, 0, 0};
+
+int main()
 {
+    std::cout << "Version: " << currentVersion.major << '.' << currentVersion.mid << '.' << currentVersion.minor << '.' << currentVersion.snapshot << '\n';
     uint64_t time = 0;
 
-    sf::RenderWindow window(sf::VideoMode(1000, 1000), "TownBig");
-    window.setFramerateLimit(60);
+    // Init Window
+    sf::Vector2u windowedWindowSize;
+    sf::RenderWindow window(sf::VideoMode(256, 256), "TownBig");
+    WindowData windowData = {};
+    windowData.fullScreen = 0;
+    initWindow(window, windowData, 1);
 
     while (window.isOpen())
     {
@@ -14,8 +22,11 @@ int WinMain()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            switch (event.type)
+            {
+            case sf::Event::Closed:
                 window.close();
+            }
         }
 
         window.clear();

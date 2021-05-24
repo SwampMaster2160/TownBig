@@ -18,12 +18,15 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="other.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="composites.hpp">
+    <ClInclude Include="types.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
