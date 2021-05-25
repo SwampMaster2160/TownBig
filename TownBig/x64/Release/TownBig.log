@@ -1,0 +1,7 @@
+﻿  main.cpp
+  other.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 19 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  TownBig.vcxproj -> C:\Users\Jaxon\source\repos\TownBig\x64\Release\TownBig.exe

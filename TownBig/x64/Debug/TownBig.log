@@ -1,7 +1,2 @@
 ﻿  main.cpp
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(1,8): warning C4081: expected 'identifier'; found '-'
-C:\Users\Jaxon\source\repos\TownBig\TownBig\main.cpp(35,37): warning C4244: 'argument': conversion from 'uint64_t' to 'float', possible loss of data
-  other.cpp
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(1,8): warning C4081: expected 'identifier'; found '-'
-  Generating Code...
   TownBig.vcxproj -> C:\Users\Jaxon\source\repos\TownBig\x64\Debug\TownBig.exe

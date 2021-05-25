@@ -1,4 +1,5 @@
-#pragma-once
+#pragma once
+
 union Version
 {
 	uint64_t full;
@@ -24,4 +25,9 @@ struct WindowData
 {
 	sf::Vector2u windowedWindowSize;
 	bool fullScreen;
+};
+
+enum class Inputs : uint8_t
+{
+	fullScreen, size
 };
