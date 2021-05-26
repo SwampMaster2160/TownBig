@@ -9,6 +9,7 @@ void initWindow(sf::RenderWindow& window, WindowData& windowData, bool firstTime
 	sf::ContextSettings contextSettings;
 	contextSettings.depthBits = 32;
 	contextSettings.sRgbCapable = 0;
+	contextSettings.antialiasingLevel = 4;
 
 	if (windowData.fullScreen)
 	{

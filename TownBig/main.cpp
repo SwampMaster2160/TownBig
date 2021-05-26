@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include <iostream>
 
-const Version currentVersion = {1, 0, 0, 0};
+const Version currentVersion = {2, 0, 0, 0};
 
 int main()
 {
@@ -20,8 +20,33 @@ int main()
 
     // Camera
 
-    sf::Vector2<double> cameraPos;
-    uint8_t cameraZoom = 4;
+    sf::Vector2<double> cameraPos = {0, 128};
+    uint8_t cameraZoom = 2;
+
+    // Graphics
+
+    sf::Texture textures;
+    textures.setSrgb(false);
+    textures.loadFromFile("assets/textures/RGB.png");
+
+    std::vector<TriPoint> triangles = {};
+
+    uint8_t x = 0;
+    do
+    {
+        uint8_t y = 0;
+        do
+        {
+            triangles.push_back({ (double)x, 0, (double)y, 0, 0 });
+            triangles.push_back({ (double)x + 1, 0, (double)y, 1, 0 });
+            triangles.push_back({ (double)x + 1, 0, (double)y + 1, 1, 1 });
+            triangles.push_back({ (double)x, 0, (double)y, 0, 0 });
+            triangles.push_back({ (double)x + 1, 0, (double)y + 1, 1, 1 });
+            triangles.push_back({ (double)x, 0, (double)y + 1, 0, 1 });
+            y++;
+        } while (y != 0);
+        x++;
+    } while (x != 0);
 
     // Main game loop
 
@@ -62,7 +87,8 @@ int main()
 
         // Render
 
-        //double cameraEdgeClipAmount = 4 / cameraZoomD;
+        cameraPos = {sin((double)time / 10.), cos((double)time / 10.) + 128. };
+
         double cameraZoomD = pow(2., -cameraZoom);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -73,14 +99,17 @@ int main()
         glTranslated((-cameraPos.x * 1) * cameraZoomD, 0., (-cameraPos.x * 1) * cameraZoomD);
         glTranslated((cameraPos.y * 1) * cameraZoomD, 0., (-cameraPos.y * 1) * cameraZoomD);
         glScaled(cameraZoomD, cameraZoomD, cameraZoomD);
+        sf::Texture::bind(&textures);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0., 0.75, 1., 0.);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        /*sf::RectangleShape rShape;
-        rShape.setPosition(20, time % 100);
-        rShape.setSize(sf::Vector2f(100, 50));
-        rShape.setFillColor(sf::Color::Blue);
-        window.draw(rShape);*/
+        GLdouble* t1 = (GLdouble*)&triangles[0];
+        glVertexPointer(3, GL_DOUBLE, 8 * sizeof(GLdouble), t1);
+        glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(GLdouble), t1 + 4);
+        glDrawArrays(GL_TRIANGLES, 0, triangles.size());
 
         window.display();
 

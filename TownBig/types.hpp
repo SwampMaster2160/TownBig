@@ -31,3 +31,26 @@ enum class Inputs : uint8_t
 {
 	fullScreen, size
 };
+
+union TriPoint
+{
+	GLdouble doubles[8];
+	struct
+	{
+		GLdouble x;
+		GLdouble y;
+		GLdouble z;
+		GLdouble blank0;
+		GLdouble texX;
+		GLdouble texY;
+	};
+
+	TriPoint(GLdouble x, GLdouble y, GLdouble z, GLdouble texX, GLdouble texY)
+	{
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->texX = texX;
+		this->texY = texY;
+	}
+};
