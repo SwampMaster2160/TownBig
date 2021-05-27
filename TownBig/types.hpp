@@ -21,17 +21,6 @@ union Version
 	}
 };
 
-struct WindowData
-{
-	sf::Vector2u windowedWindowSize;
-	bool fullScreen;
-};
-
-enum class Inputs : uint8_t
-{
-	fullScreen, size
-};
-
 union TriPoint
 {
 	GLdouble doubles[8];
@@ -52,5 +41,86 @@ union TriPoint
 		this->z = z;
 		this->texX = texX;
 		this->texY = texY;
+	}
+
+	TriPoint()
+	{
+
+	}
+};
+
+struct MainData
+{
+	bool redrawMap;
+	sf::Vector2u windowedWindowSize;
+	bool fullScreen;
+	std::vector<TriPoint> triangles;
+};
+
+enum class Inputs : uint8_t
+{
+	fullScreen, size
+};
+
+struct PosSize
+{
+	size_t pos;
+	size_t size;
+
+	PosSize()
+	{
+
+	}
+
+	PosSize(size_t pos, size_t size)
+	{
+		this->pos = pos;
+		this->size = size;
+	}
+
+	size_t getEnd()
+	{
+		return pos + size;
+	}
+};
+
+struct Tile
+{
+	uint8_t type;
+	PosSize trisPosSize;
+
+	Tile()
+	{
+
+	}
+};
+
+struct TileRow
+{
+	Tile tiles[256];
+
+	TileRow()
+	{
+
+	}
+
+	Tile &operator[] (size_t x)
+	{
+		return tiles[x];
+	}
+};
+
+struct Map
+{
+	TileRow tiles[256];
+
+	Map()
+	{
+
+	}
+
+	TileRow& operator[] (size_t x)
+	{
+		return tiles[x];
 	}
 };

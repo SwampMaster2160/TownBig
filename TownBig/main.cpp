@@ -1,10 +1,11 @@
 #include "main.hpp"
 #include <iostream>
 
-const Version currentVersion = {2, 0, 0, 0};
+const Version currentVersion = {3, 0, 0, 0};
 
 int main()
 {
+    MainData mainData;
     std::cout << "Version: " << currentVersion.major << '.' << currentVersion.mid << '.' << currentVersion.minor << '.' << currentVersion.snapshot << '\n';
     uint64_t time = 0;
     bool inputsLast[(uint8_t)Inputs::size];
@@ -14,9 +15,8 @@ int main()
 
     sf::Vector2u windowedWindowSize;
     sf::RenderWindow window(sf::VideoMode(256, 256), "TownBig");
-    WindowData windowData = {};
-    windowData.fullScreen = 0;
-    initWindow(window, windowData, 1);
+    mainData.fullScreen = 0;
+    initWindow(window, mainData, 1);
 
     // Camera
 
@@ -29,24 +29,25 @@ int main()
     textures.setSrgb(false);
     textures.loadFromFile("assets/textures/RGB.png");
 
-    std::vector<TriPoint> triangles = {};
+    // Map
 
-    uint8_t x = 0;
-    do
+    mainData.redrawMap = 1;
+    Map& map = *(new Map);
+
+
     {
-        uint8_t y = 0;
+        uint8_t x = 0;
         do
         {
-            triangles.push_back({ (double)x, 0, (double)y, 0, 0 });
-            triangles.push_back({ (double)x + 1, 0, (double)y, 1, 0 });
-            triangles.push_back({ (double)x + 1, 0, (double)y + 1, 1, 1 });
-            triangles.push_back({ (double)x, 0, (double)y, 0, 0 });
-            triangles.push_back({ (double)x + 1, 0, (double)y + 1, 1, 1 });
-            triangles.push_back({ (double)x, 0, (double)y + 1, 0, 1 });
-            y++;
-        } while (y != 0);
-        x++;
-    } while (x != 0);
+            uint8_t y = 0;
+            do
+            {
+                map[x][y].type = rand() % 2;
+                y++;
+            } while (y != 0);
+            x++;
+        } while (x != 0);
+    }
 
     // Main game loop
 
@@ -76,18 +77,40 @@ int main()
 
         // Game logic
 
+        for (uint8_t x = 0; x < 100; x++)
+        {
+            map[rand() % 256][rand() % 256].type = rand() % 2;
+        }
+
         // Get inputs
         inputs[(uint8_t)Inputs::fullScreen] = sf::Keyboard::isKeyPressed(sf::Keyboard::F11);
 
         if (inputs[(uint8_t)Inputs::fullScreen] & !inputsLast[(uint8_t)Inputs::fullScreen])
         {
-            windowData.fullScreen = !windowData.fullScreen;
-            initWindow(window, windowData, 0);
+            mainData.fullScreen = !mainData.fullScreen;
+            initWindow(window, mainData, 0);
         }
 
         // Render
 
-        cameraPos = {sin((double)time / 10.), cos((double)time / 10.) + 128. };
+        if (mainData.redrawMap)
+        {
+            mainData.triangles = {};
+            uint8_t x = 0;
+            do
+            {
+                uint8_t y = 0;
+                do
+                {
+                    drawTile(mainData, map[x][y], x, y);
+                    y++;
+                } while (y != 0);
+                x++;
+            } while (x != 0);
+            mainData.redrawMap = 0;
+        }
+
+        cameraPos = {sin((double)time / 100.), cos((double)time / 100.) + 128. };
 
         double cameraZoomD = pow(2., -cameraZoom);
         glMatrixMode(GL_MODELVIEW);
@@ -106,10 +129,10 @@ int main()
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        GLdouble* t1 = (GLdouble*)&triangles[0];
+        GLdouble* t1 = (GLdouble*)&mainData.triangles[0];
         glVertexPointer(3, GL_DOUBLE, 8 * sizeof(GLdouble), t1);
         glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(GLdouble), t1 + 4);
-        glDrawArrays(GL_TRIANGLES, 0, triangles.size());
+        glDrawArrays(GL_TRIANGLES, 0, mainData.triangles.size());
 
         window.display();
 
@@ -118,5 +141,6 @@ int main()
         for (uint8_t x = 0; x < (uint8_t)Inputs::size; x++) inputsLast[x] = inputs[x];
     }
 
+    delete &map;
     return 0;
 }
