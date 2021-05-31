@@ -49,19 +49,6 @@ union TriPoint
 	}
 };
 
-struct MainData
-{
-	bool redrawMap;
-	sf::Vector2u windowedWindowSize;
-	bool fullScreen;
-	std::vector<TriPoint> triangles;
-};
-
-enum class Inputs : uint8_t
-{
-	fullScreen, size
-};
-
 struct PosSize
 {
 	size_t pos;
@@ -82,6 +69,20 @@ struct PosSize
 	{
 		return pos + size;
 	}
+};
+
+struct MainData
+{
+	bool redrawMap;
+	sf::Vector2u windowedWindowSize;
+	bool fullScreen;
+	std::vector<TriPoint> triangles;
+	std::vector<PosSize> freeTriangles;
+};
+
+enum class Inputs : uint8_t
+{
+	fullScreen, size
 };
 
 struct Tile

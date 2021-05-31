@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include <iostream>
 
-const Version currentVersion = {3, 0, 0, 0};
+const Version currentVersion = {4, 0, 0, 0};
 
 int main()
 {
@@ -20,8 +20,8 @@ int main()
 
     // Camera
 
-    sf::Vector2<double> cameraPos = {0, 128};
-    uint8_t cameraZoom = 2;
+    sf::Vector2<double> cameraPos = {128, 128};
+    uint8_t cameraZoom = 4;
 
     // Graphics
 
@@ -32,6 +32,7 @@ int main()
     // Map
 
     mainData.redrawMap = 1;
+    std::vector<sf::Vector2<uint8_t>> redrawTileQueue;
     Map& map = *(new Map);
 
 
@@ -79,7 +80,9 @@ int main()
 
         for (uint8_t x = 0; x < 100; x++)
         {
-            map[rand() % 256][rand() % 256].type = rand() % 2;
+            sf::Vector2<uint8_t> pos = { (uint8_t)rand() , (uint8_t)rand() };
+            map[pos.x][pos.y].type = rand() % 2;//redrawTileQueue
+            redrawTileQueue.push_back(pos);
         }
 
         // Get inputs
@@ -93,16 +96,25 @@ int main()
 
         // Render
 
+        for (; redrawTileQueue.size() > 0;)
+        {
+            sf::Vector2<uint8_t> pos = redrawTileQueue[redrawTileQueue.size() - 1];
+            //deleteTris(mainData, map[pos.x][pos.y].trisPosSize);
+            drawTile(mainData, map[pos.x][pos.y], pos);
+            redrawTileQueue.pop_back();
+        }
+
         if (mainData.redrawMap)
         {
             mainData.triangles = {};
+            mainData.freeTriangles = {};
             uint8_t x = 0;
             do
             {
                 uint8_t y = 0;
                 do
                 {
-                    drawTile(mainData, map[x][y], x, y);
+                    drawTile(mainData, map[x][y], { x, y });
                     y++;
                 } while (y != 0);
                 x++;
@@ -110,7 +122,7 @@ int main()
             mainData.redrawMap = 0;
         }
 
-        cameraPos = {sin((double)time / 100.), cos((double)time / 100.) + 128. };
+        cameraPos = {sin((double)time / 100.) + 128., cos((double)time / 100.) + 128. };
 
         double cameraZoomD = pow(2., -cameraZoom);
         glMatrixMode(GL_MODELVIEW);
