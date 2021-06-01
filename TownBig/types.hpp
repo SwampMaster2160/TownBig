@@ -82,7 +82,7 @@ struct MainData
 
 enum class Inputs : uint8_t
 {
-	fullScreen, size
+	fullScreen, mainClick, pan, windowResize, zoomIn, zoomOut, size
 };
 
 struct Tile

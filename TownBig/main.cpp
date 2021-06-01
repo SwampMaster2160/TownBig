@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include <iostream>
 
-const Version currentVersion = {4, 0, 0, 0};
+const Version currentVersion = {5, 0, 0, 0};
 
 int main()
 {
@@ -9,6 +9,7 @@ int main()
     std::cout << "Version: " << currentVersion.major << '.' << currentVersion.mid << '.' << currentVersion.minor << '.' << currentVersion.snapshot << '\n';
     uint64_t time = 0;
     bool inputsLast[(uint8_t)Inputs::size];
+    uint64_t lastSystemTime = getSystemTime();
     for (uint8_t x = 0; x < (uint8_t)Inputs::size; x++) inputsLast[x] = 0;
 
     // Init Window
@@ -72,26 +73,65 @@ int main()
                 window.close();
                 break;
             case sf::Event::Resized:
+                inputs[(uint8_t)Inputs::windowResize] = 1;
+                break;
+            case sf::Event::MouseWheelMoved:
+                inputs[(uint8_t)Inputs::zoomIn] = event.mouseWheel.delta > 0;
+                inputs[(uint8_t)Inputs::zoomOut] = event.mouseWheel.delta < 0;
                 break;
             }
         }
 
-        // Game logic
-
-        for (uint8_t x = 0; x < 100; x++)
-        {
-            sf::Vector2<uint8_t> pos = { (uint8_t)rand() , (uint8_t)rand() };
-            map[pos.x][pos.y].type = rand() % 2;//redrawTileQueue
-            redrawTileQueue.push_back(pos);
-        }
-
         // Get inputs
+
         inputs[(uint8_t)Inputs::fullScreen] = sf::Keyboard::isKeyPressed(sf::Keyboard::F11);
+        inputs[(uint8_t)Inputs::mainClick] = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+        inputs[(uint8_t)Inputs::pan] = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+
+        uint64_t systemTime = getSystemTime();
+        double secondsPerFrame = (double)(systemTime - lastSystemTime) / 1000000000.;
 
         if (inputs[(uint8_t)Inputs::fullScreen] & !inputsLast[(uint8_t)Inputs::fullScreen])
         {
             mainData.fullScreen = !mainData.fullScreen;
             initWindow(window, mainData, 0);
+        }
+        if (inputs[(uint8_t)Inputs::windowResize])
+        {
+            mainData.windowedWindowSize = window.getSize();
+            initWindow(window, mainData, 0);
+        }
+
+        // Zoom
+
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2u windowSize = window.getSize();
+
+        if (inputs[(uint8_t)Inputs::zoomIn]) cameraZoom -= 1;
+        if (inputs[(uint8_t)Inputs::zoomOut]) cameraZoom += 1;
+        if (cameraZoom < 1) cameraZoom = 1;
+        if (cameraZoom > 7) cameraZoom = 7;
+
+        double cameraZoomD = pow(2., cameraZoom);
+
+        // Pan
+
+        if (inputs[(uint8_t)Inputs::pan])
+        {
+            cameraPos += { ((double)mousePos.x / (double)windowSize.x - 0.5) * secondsPerFrame * 5 * cameraZoomD, ((double)mousePos.y / (double)windowSize.y - 0.5) * secondsPerFrame * 5 * cameraZoomD };
+        }
+        if (cameraPos.x < 0) cameraPos.x = 0;
+        if (cameraPos.y < 0) cameraPos.y = 0;
+        if (cameraPos.x > 256) cameraPos.x = 256;
+        if (cameraPos.y > 256) cameraPos.y = 256;
+
+        // Game logic
+
+        for (uint8_t x = 0; x < 10; x++)
+        {
+            sf::Vector2<uint8_t> pos = { (uint8_t)rand() , (uint8_t)rand() };
+            map[pos.x][pos.y].type = rand() % 2;
+            redrawTileQueue.push_back(pos);
         }
 
         // Render
@@ -99,7 +139,6 @@ int main()
         for (; redrawTileQueue.size() > 0;)
         {
             sf::Vector2<uint8_t> pos = redrawTileQueue[redrawTileQueue.size() - 1];
-            //deleteTris(mainData, map[pos.x][pos.y].trisPosSize);
             drawTile(mainData, map[pos.x][pos.y], pos);
             redrawTileQueue.pop_back();
         }
@@ -122,9 +161,8 @@ int main()
             mainData.redrawMap = 0;
         }
 
-        cameraPos = {sin((double)time / 100.) + 128., cos((double)time / 100.) + 128. };
+        cameraZoomD = pow(2., -cameraZoom);
 
-        double cameraZoomD = pow(2., -cameraZoom);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glTranslated(0., 0., -200.);
@@ -151,6 +189,7 @@ int main()
         // Loop End
 
         for (uint8_t x = 0; x < (uint8_t)Inputs::size; x++) inputsLast[x] = inputs[x];
+        lastSystemTime = systemTime;
     }
 
     delete &map;

@@ -1,4 +1,6 @@
 #include "main.hpp"
+#include <iostream>
+#include <chrono>
 
 void initWindow(sf::RenderWindow& window, MainData& windowData, bool firstTime)
 {
@@ -32,7 +34,7 @@ void initWindow(sf::RenderWindow& window, MainData& windowData, bool firstTime)
 	GLdouble ratio = (double)(window.getSize().x) / window.getSize().y;
 	glOrtho(-ratio, ratio, -1., 1., 1., 1000.);
 
-	window.setFramerateLimit(60);
+	//window.setFramerateLimit(60);
 	window.setVerticalSyncEnabled(1);
 	window.setActive(1);
 }
@@ -41,7 +43,7 @@ PosSize appendTris(MainData& mainData, std::vector<TriPoint>& newTris)
 {
 	for (size_t x = 0; x < mainData.freeTriangles.size(); x++)
 	{
-		if (mainData.freeTriangles[x].size <= newTris.size())
+		if (mainData.freeTriangles[x].size >= newTris.size())
 		{
 			PosSize out = { mainData.freeTriangles[x].pos, newTris.size() };
 			memcpy(&mainData.triangles[mainData.freeTriangles[x].pos], &newTris[0], newTris.size() * sizeof(TriPoint));
@@ -65,9 +67,9 @@ PosSize appendTris(MainData& mainData, std::vector<TriPoint>& newTris)
 
 void deleteTris(MainData& mainData, PosSize posSize)
 {
-	for (uint64_t x = posSize.pos; x < posSize.getEnd(); x++)
+	for (size_t x = posSize.pos; x < posSize.getEnd(); x++)
 	{
-		for (uint64_t y = 0; y < 3; y++)
+		for (size_t y = 0; y < 3; y++)
 		{
 			mainData.triangles[x].doubles[y] = 0;
 		}
@@ -78,9 +80,9 @@ void deleteTris(MainData& mainData, PosSize posSize)
 	{
 		if (posSize.pos == mainData.freeTriangles[x].getEnd())
 		{
-			//mainData.freeTriangles[mainData.freeTriangles.size() - 1].pos -= mainData.freeTriangles[x].size;
-			//mainData.freeTriangles[mainData.freeTriangles.size() - 1].size += mainData.freeTriangles[x].size;
-			//mainData.freeTriangles.erase(mainData.freeTriangles.begin() + x);
+			mainData.freeTriangles[mainData.freeTriangles.size() - 1].pos -= mainData.freeTriangles[x].size;
+			mainData.freeTriangles[mainData.freeTriangles.size() - 1].size += mainData.freeTriangles[x].size;
+			mainData.freeTriangles.erase(mainData.freeTriangles.begin() + x);
 		}
 	}
 
@@ -88,9 +90,8 @@ void deleteTris(MainData& mainData, PosSize posSize)
 	{
 		if (posSize.getEnd() == mainData.freeTriangles[x].pos)
 		{
-			////mainData.freeTriangles[mainData.freeTriangles.size() - 1].pos -= mainData.freeTriangles[x].size;
-			//mainData.freeTriangles[mainData.freeTriangles.size() - 1].size += mainData.freeTriangles[x].size;
-			//mainData.freeTriangles.erase(mainData.freeTriangles.begin() + x);
+			mainData.freeTriangles[mainData.freeTriangles.size() - 1].size += mainData.freeTriangles[x].size;
+			mainData.freeTriangles.erase(mainData.freeTriangles.begin() + x);
 		}
 	}
 }
@@ -117,4 +118,9 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos)
 		newTris.push_back({ (double)pos.x, 2, (double)pos.y + 1, 0, 1 });
 	}
 	tile.trisPosSize = appendTris(mainData, newTris);
+}
+
+uint64_t getSystemTime()
+{
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
