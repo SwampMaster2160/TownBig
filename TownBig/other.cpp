@@ -11,7 +11,7 @@ void initWindow(sf::RenderWindow& window, MainData& windowData, bool firstTime)
 	sf::ContextSettings contextSettings;
 	contextSettings.depthBits = 32;
 	contextSettings.sRgbCapable = 0;
-	contextSettings.antialiasingLevel = 4;
+	contextSettings.antialiasingLevel = 1;
 
 	if (windowData.fullScreen)
 	{
@@ -105,18 +105,18 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos)
 
 	uint8_t type = tile.type;
 	std::vector<TriPoint> newTris = {};
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y, 0, 0 });
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y, 1 / ((double)type + 1), 0 });
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, 1, 1 });
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y, 0, 0 });
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, 1, 1 });
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y + 1, 0, 1 });
-	if (tile.type == 1)
+	newTris.push_back({ (double)pos.x, 0, (double)pos.y, 0.00390625 * type, 0 });
+	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y, 0.00390625 + 0.00390625 * type, 0 });//(double)type + 
+	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, 0.00390625 + 0.00390625 * type, 0.00390625 });
+	newTris.push_back({ (double)pos.x, 0, (double)pos.y, 0.00390625 * type, 0 });
+	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, 0.00390625 + 0.00390625 * type, 0.00390625 });
+	newTris.push_back({ (double)pos.x, 0, (double)pos.y + 1, 0.00390625 * type, 0.00390625 });
+	/*if (tile.type == 1)
 	{
-		newTris.push_back({ (double)pos.x, 2, (double)pos.y, 0, 0 });
-		newTris.push_back({ (double)pos.x + 1, 2, (double)pos.y + 1, 0, 1 });
-		newTris.push_back({ (double)pos.x, 2, (double)pos.y + 1, 0, 1 });
-	}
+		//newTris.push_back({ (double)pos.x, 2, (double)pos.y, 0, 0 });
+		//newTris.push_back({ (double)pos.x + 1, 2, (double)pos.y + 1, 0, 1 });
+		//newTris.push_back({ (double)pos.x, 2, (double)pos.y + 1, 0, 1 });
+	}*/
 	tile.trisPosSize = appendTris(mainData, newTris);
 }
 

@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include <iostream>
 
-const Version currentVersion = {5, 0, 0, 0};
+const Version currentVersion = {6, 0, 0, 0};
 
 int main()
 {
@@ -26,9 +26,19 @@ int main()
 
     // Graphics
 
+    sf::Image image;
+    image.create(4096, 4096, sf::Color(0, 0, 0, 0));
+
+    sf::Image subImage;
+
+    subImage.loadFromFile("assets/textures/grass.png");
+    image.copy(subImage, 0, 0, sf::IntRect(0, 0, 16, 16));
+    subImage.loadFromFile("assets/textures/water.png");
+    image.copy(subImage, 16, 0, sf::IntRect(0, 0, 16, 16));
+
     sf::Texture textures;
     textures.setSrgb(false);
-    textures.loadFromFile("assets/textures/RGB.png");
+    textures.loadFromImage(image);
 
     // Map
 

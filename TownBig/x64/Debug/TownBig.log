@@ -1,3 +1,2 @@
-﻿  main.cpp
-C:\Users\Jaxon\source\repos\TownBig\TownBig\main.cpp(185,64): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+﻿  other.cpp
   TownBig.vcxproj -> C:\Users\Jaxon\source\repos\TownBig\x64\Debug\TownBig.exe
