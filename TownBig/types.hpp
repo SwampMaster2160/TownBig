@@ -125,3 +125,8 @@ struct Map
 		return tiles[x];
 	}
 };
+
+enum class TextureID : uint8_t
+{
+	grass, water, size
+};

@@ -1,2 +1,4 @@
-﻿  other.cpp
+﻿  main.cpp
+C:\Users\Jaxon\source\repos\TownBig\TownBig\main.cpp(47,87): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\Users\Jaxon\source\repos\TownBig\TownBig\main.cpp(208,64): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
   TownBig.vcxproj -> C:\Users\Jaxon\source\repos\TownBig\x64\Debug\TownBig.exe

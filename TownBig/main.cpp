@@ -1,7 +1,9 @@
 #include "main.hpp"
+#include <string>
 #include <iostream>
+#include <filesystem>
 
-const Version currentVersion = {6, 0, 0, 0};
+const Version currentVersion = {7, 0, 0, 0};
 
 int main()
 {
@@ -11,6 +13,8 @@ int main()
     bool inputsLast[(uint8_t)Inputs::size];
     uint64_t lastSystemTime = getSystemTime();
     for (uint8_t x = 0; x < (uint8_t)Inputs::size; x++) inputsLast[x] = 0;
+
+    std::cout << textureNames[(uint8_t)TextureID::grass] << '\n';
 
     // Init Window
 
@@ -31,10 +35,19 @@ int main()
 
     sf::Image subImage;
 
-    subImage.loadFromFile("assets/textures/grass.png");
-    image.copy(subImage, 0, 0, sf::IntRect(0, 0, 16, 16));
-    subImage.loadFromFile("assets/textures/water.png");
-    image.copy(subImage, 16, 0, sf::IntRect(0, 0, 16, 16));
+    //subImage.loadFromFile("assets/textures/world/grass.png");
+    //image.copy(subImage, 0, 0, sf::IntRect(0, 0, 16, 16));
+    //subImage.loadFromFile("assets/textures/world/water.png");
+    //image.copy(subImage, 16, 0, sf::IntRect(0, 0, 16, 16));
+    size_t x = 0;
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator("assets/textures/world"))
+    {
+        //std::cout << entry.path().generic_string() << ' ' << x << '\n';
+        subImage.loadFromFile(entry.path().generic_string());
+        image.copy(subImage, (x % 256) * 16, (x / 256) * 16, sf::IntRect(0, 0, 16, 16));
+        x++;
+    }
+        //std::cout << entry.path() << std::endl;
 
     sf::Texture textures;
     textures.setSrgb(false);
