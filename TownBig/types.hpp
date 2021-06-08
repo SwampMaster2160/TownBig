@@ -71,6 +71,12 @@ struct PosSize
 	}
 };
 
+struct TextureData
+{
+	const char* name;
+	sf::Rect<double> rect;
+};
+
 struct MainData
 {
 	bool redrawMap;
@@ -78,6 +84,7 @@ struct MainData
 	bool fullScreen;
 	std::vector<TriPoint> triangles;
 	std::vector<PosSize> freeTriangles;
+	std::vector<TextureData> textureDatas;
 };
 
 enum class Inputs : uint8_t

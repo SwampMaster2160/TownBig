@@ -104,13 +104,14 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos)
 	}
 
 	uint8_t type = tile.type;
+	sf::Rect<double>& rect = mainData.textureDatas[type].rect;
 	std::vector<TriPoint> newTris = {};
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y, 0.00390625 * type, 0 });
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y, 0.00390625 + 0.00390625 * type, 0 });//(double)type + 
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, 0.00390625 + 0.00390625 * type, 0.00390625 });
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y, 0.00390625 * type, 0 });
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, 0.00390625 + 0.00390625 * type, 0.00390625 });
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y + 1, 0.00390625 * type, 0.00390625 });
+	newTris.push_back({ (double)pos.x, 0, (double)pos.y, rect.left, rect.top });
+	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y, rect.left + rect.width, rect.top });//(double)type + 
+	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, rect.left + rect.width, rect.top + rect.height });
+	newTris.push_back({ (double)pos.x, 0, (double)pos.y, rect.left, rect.top });
+	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, rect.left + rect.width, rect.top + rect.height });
+	newTris.push_back({ (double)pos.x, 0, (double)pos.y + 1, rect.left, rect.top + rect.height });
 	/*if (tile.type == 1)
 	{
 		//newTris.push_back({ (double)pos.x, 2, (double)pos.y, 0, 0 });
@@ -124,3 +125,8 @@ uint64_t getSystemTime()
 {
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
+
+/*size_t getFilenameStringLengthMinusExtension(const char* filename)
+{
+
+}*/

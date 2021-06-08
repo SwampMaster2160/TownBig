@@ -1,20 +1,26 @@
 #include "main.hpp"
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <filesystem>
 
-const Version currentVersion = {7, 0, 0, 0};
+const Version currentVersion = {0xFFFF, 0, 0, 0};
 
 int main()
 {
     MainData mainData;
-    std::cout << "Version: " << currentVersion.major << '.' << currentVersion.mid << '.' << currentVersion.minor << '.' << currentVersion.snapshot << '\n';
+    std::cout << "Version: " << currentVersion.major << '.' << currentVersion.mid << '.' << currentVersion.minor << '.' << currentVersion.snapshot;
+
+    if (currentVersion.snapshot != 0xFFFF) std::cout << " (Snapshop)";
+
+    std::cout << '\n';
+
     uint64_t time = 0;
     bool inputsLast[(uint8_t)Inputs::size];
     uint64_t lastSystemTime = getSystemTime();
     for (uint8_t x = 0; x < (uint8_t)Inputs::size; x++) inputsLast[x] = 0;
 
-    std::cout << textureNames[(uint8_t)TextureID::grass] << '\n';
+    //std::cout << textureNames[(uint8_t)TextureID::grass] << '\n';
 
     // Init Window
 
@@ -30,28 +36,47 @@ int main()
 
     // Graphics
 
+    mainData.textureDatas = {};
+
+    for (size_t x = 0; x < (size_t)TextureID::size; x++)
+    {
+        TextureData data = {};
+        data.name = textureNames[x];
+        mainData.textureDatas.push_back(data);
+        //std::cout << textureNames[x] << '\n';
+    }
+
     sf::Image image;
     image.create(4096, 4096, sf::Color(0, 0, 0, 0));
 
     sf::Image subImage;
 
-    //subImage.loadFromFile("assets/textures/world/grass.png");
-    //image.copy(subImage, 0, 0, sf::IntRect(0, 0, 16, 16));
-    //subImage.loadFromFile("assets/textures/world/water.png");
-    //image.copy(subImage, 16, 0, sf::IntRect(0, 0, 16, 16));
     size_t x = 0;
     for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator("assets/textures/world"))
     {
-        //std::cout << entry.path().generic_string() << ' ' << x << '\n';
+        std::string string = entry.path().filename().generic_string();
         subImage.loadFromFile(entry.path().generic_string());
         image.copy(subImage, (x % 256) * 16, (x / 256) * 16, sf::IntRect(0, 0, 16, 16));
+
+        size_t lengthNoExt = (size_t)strrchr(string.c_str(), '.') - (size_t)string.c_str();
+
+        for (size_t y = 0; y < (size_t)TextureID::size; y++)
+        {
+            //std::cout << string << ' ' << lengthNoExt << ' ' << strncmp(string.c_str(), textureDatas[y].name, lengthNoExt) << '\n';
+            if (strncmp(string.c_str(), mainData.textureDatas[y].name, lengthNoExt) == 0)
+            {
+                mainData.textureDatas[y].rect = { 0.00390625 * (x % 256), 0.00390625 * (x / 256), 0.00390625, 0.00390625 };
+            }
+        }
+
+        //std::cout << string << '\n';
+
         x++;
     }
-        //std::cout << entry.path() << std::endl;
 
-    sf::Texture textures;
-    textures.setSrgb(false);
-    textures.loadFromImage(image);
+    sf::Texture textureMap;
+    textureMap.setSrgb(false);
+    textureMap.loadFromImage(image);
 
     // Map
 
@@ -195,7 +220,7 @@ int main()
         glTranslated((-cameraPos.x * 1) * cameraZoomD, 0., (-cameraPos.x * 1) * cameraZoomD);
         glTranslated((cameraPos.y * 1) * cameraZoomD, 0., (-cameraPos.y * 1) * cameraZoomD);
         glScaled(cameraZoomD, cameraZoomD, cameraZoomD);
-        sf::Texture::bind(&textures);
+        sf::Texture::bind(&textureMap);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0., 0.75, 1., 0.);
