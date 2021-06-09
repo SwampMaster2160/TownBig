@@ -4,7 +4,7 @@
 #include <iostream>
 #include <filesystem>
 
-const Version currentVersion = {0xFFFF, 0, 0, 0};
+const Version currentVersion = {0, 1, 0, 0};
 
 int main()
 {
@@ -26,7 +26,7 @@ int main()
 
     sf::Vector2u windowedWindowSize;
     sf::RenderWindow window(sf::VideoMode(256, 256), "TownBig");
-    mainData.fullScreen = 0;
+    mainData.fullScreen = 1;
     initWindow(window, mainData, 1);
 
     // Camera
@@ -52,7 +52,7 @@ int main()
     sf::Image subImage;
 
     size_t x = 0;
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator("assets/textures/world"))
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator("assets/textures"))
     {
         std::string string = entry.path().filename().generic_string();
         subImage.loadFromFile(entry.path().generic_string());
@@ -65,7 +65,11 @@ int main()
             //std::cout << string << ' ' << lengthNoExt << ' ' << strncmp(string.c_str(), textureDatas[y].name, lengthNoExt) << '\n';
             if (strncmp(string.c_str(), mainData.textureDatas[y].name, lengthNoExt) == 0)
             {
-                mainData.textureDatas[y].rect = { 0.00390625 * (x % 256), 0.00390625 * (x / 256), 0.00390625, 0.00390625 };
+                //mainData.textureDatas[y].rect = { 0.00390625 * (x % 256), 0.00390625 * (x / 256), 0.00390625, 0.00390625 };
+                mainData.textureDatas[y].xStart = 0.00390625 * (x % 256);
+                mainData.textureDatas[y].yStart = 0.00390625 * (x / 256);
+                mainData.textureDatas[y].xEnd = 0.00390625 * (x % 256) + 0.00390625;
+                mainData.textureDatas[y].yEnd = 0.00390625 * (x / 256) + 0.00390625;
             }
         }
 

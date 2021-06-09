@@ -74,7 +74,10 @@ struct PosSize
 struct TextureData
 {
 	const char* name;
-	sf::Rect<double> rect;
+	double xStart;
+	double yStart;
+	double xEnd;
+	double yEnd;
 };
 
 struct MainData
@@ -135,5 +138,5 @@ struct Map
 
 enum class TextureID : uint8_t
 {
-	grass, water, size
+	grass, water, sand, rock, snow, select, debug, size
 };

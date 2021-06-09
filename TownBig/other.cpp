@@ -96,6 +96,16 @@ void deleteTris(MainData& mainData, PosSize posSize)
 	}
 }
 
+void createQuad(sf::Vector3<double> pos0, sf::Vector3<double> pos1, sf::Vector3<double> pos2, sf::Vector3<double> pos3, std::vector<TriPoint>& newTris, TextureData& textureData)
+{
+	newTris.push_back({ pos0.x, pos0.y, pos0.z, textureData.xStart, textureData.yStart });
+	newTris.push_back({ pos1.x, pos1.y, pos1.z, textureData.xEnd,   textureData.yStart });
+	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd   });
+	newTris.push_back({ pos0.x, pos0.y, pos0.z, textureData.xStart, textureData.yStart });
+	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd   });
+	newTris.push_back({ pos2.x, pos2.y, pos2.z, textureData.xStart, textureData.yEnd   });
+}
+
 void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos)
 {
 	if (!mainData.redrawMap)
@@ -104,20 +114,12 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos)
 	}
 
 	uint8_t type = tile.type;
-	sf::Rect<double>& rect = mainData.textureDatas[type].rect;
+	TextureData& textureData = mainData.textureDatas[type];
 	std::vector<TriPoint> newTris = {};
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y, rect.left, rect.top });
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y, rect.left + rect.width, rect.top });//(double)type + 
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, rect.left + rect.width, rect.top + rect.height });
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y, rect.left, rect.top });
-	newTris.push_back({ (double)pos.x + 1, 0, (double)pos.y + 1, rect.left + rect.width, rect.top + rect.height });
-	newTris.push_back({ (double)pos.x, 0, (double)pos.y + 1, rect.left, rect.top + rect.height });
-	/*if (tile.type == 1)
-	{
-		//newTris.push_back({ (double)pos.x, 2, (double)pos.y, 0, 0 });
-		//newTris.push_back({ (double)pos.x + 1, 2, (double)pos.y + 1, 0, 1 });
-		//newTris.push_back({ (double)pos.x, 2, (double)pos.y + 1, 0, 1 });
-	}*/
+
+	// Terrain
+	createQuad({ (double)pos.x, 0, (double)pos.y }, { (double)pos.x + 1, 0, (double)pos.y }, { (double)pos.x, 0, (double)pos.y + 1 }, { (double)pos.x + 1, 0, (double)pos.y + 1 }, newTris, textureData);
+
 	tile.trisPosSize = appendTris(mainData, newTris);
 }
 
