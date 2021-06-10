@@ -4,7 +4,7 @@
 #include <iostream>
 #include <filesystem>
 
-const Version currentVersion = {0, 1, 0, 0};
+const Version currentVersion = {1, 1, 0, 0};
 
 int main()
 {
@@ -65,7 +65,6 @@ int main()
             //std::cout << string << ' ' << lengthNoExt << ' ' << strncmp(string.c_str(), textureDatas[y].name, lengthNoExt) << '\n';
             if (strncmp(string.c_str(), mainData.textureDatas[y].name, lengthNoExt) == 0)
             {
-                //mainData.textureDatas[y].rect = { 0.00390625 * (x % 256), 0.00390625 * (x / 256), 0.00390625, 0.00390625 };
                 mainData.textureDatas[y].xStart = 0.00390625 * (x % 256);
                 mainData.textureDatas[y].yStart = 0.00390625 * (x / 256);
                 mainData.textureDatas[y].xEnd = 0.00390625 * (x % 256) + 0.00390625;
@@ -96,7 +95,8 @@ int main()
             uint8_t y = 0;
             do
             {
-                map[x][y].type = rand() % 2;
+                map[x][y].groundMaterial = (GroundMaterial)(rand() % 2);
+                map[x][y].height = rand() % 2;
                 y++;
             } while (y != 0);
             x++;
@@ -182,7 +182,7 @@ int main()
         for (uint8_t x = 0; x < 10; x++)
         {
             sf::Vector2<uint8_t> pos = { (uint8_t)rand() , (uint8_t)rand() };
-            map[pos.x][pos.y].type = rand() % 2;
+            map[pos.x][pos.y].groundMaterial = (GroundMaterial)(rand() % 2);
             redrawTileQueue.push_back(pos);
         }
 
@@ -191,7 +191,7 @@ int main()
         for (; redrawTileQueue.size() > 0;)
         {
             sf::Vector2<uint8_t> pos = redrawTileQueue[redrawTileQueue.size() - 1];
-            drawTile(mainData, map[pos.x][pos.y], pos);
+            drawTile(mainData, map[pos.x][pos.y], pos, map);
             redrawTileQueue.pop_back();
         }
 
@@ -205,7 +205,7 @@ int main()
                 uint8_t y = 0;
                 do
                 {
-                    drawTile(mainData, map[x][y], { x, y });
+                    drawTile(mainData, map[x][y], { x, y }, map);
                     y++;
                 } while (y != 0);
                 x++;

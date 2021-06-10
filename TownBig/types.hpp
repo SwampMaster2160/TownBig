@@ -95,15 +95,17 @@ enum class Inputs : uint8_t
 	fullScreen, mainClick, pan, windowResize, zoomIn, zoomOut, size
 };
 
+enum class GroundMaterial : uint8_t
+{
+	grass, sand, size
+};
+
 struct Tile
 {
-	uint8_t type;
 	PosSize trisPosSize;
 
-	Tile()
-	{
-
-	}
+	GroundMaterial groundMaterial;
+	int8_t height;
 };
 
 struct TileRow

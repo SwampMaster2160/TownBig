@@ -106,19 +106,54 @@ void createQuad(sf::Vector3<double> pos0, sf::Vector3<double> pos1, sf::Vector3<
 	newTris.push_back({ pos2.x, pos2.y, pos2.z, textureData.xStart, textureData.yEnd   });
 }
 
-void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos)
+bool isTileInMap(sf::Vector2<int16_t> pos)
+{
+	if (pos.x < 0 || pos.y < 0 || pos.x > 255 || pos.y > 255) return 0;
+	return 1;
+}
+
+void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map)
 {
 	if (!mainData.redrawMap)
 	{
 		deleteTris(mainData, tile.trisPosSize);
 	}
 
-	uint8_t type = tile.type;
+	// Get neighbors height
+
+	int8_t neighborHeights[3][3];
+
+	for (uint8_t x = 0; x < 3; x++)
+	{
+		int16_t xMap = (int16_t)pos.x - (int16_t)1 + (int16_t)x;
+		for (uint8_t y = 0; y < 3; y++)
+		{
+			int16_t yMap = (int16_t)pos.y - (int16_t)1 + (int16_t)y;
+
+			if (isTileInMap({ xMap, yMap }))
+			{
+				neighborHeights[x][y] = map[xMap][yMap].height;
+			}
+			else neighborHeights[x][y] = -128;
+		}
+	}
+
+	uint8_t type = (uint8_t)tile.groundMaterial * 2;
+	int8_t height = tile.height;
 	TextureData& textureData = mainData.textureDatas[type];
 	std::vector<TriPoint> newTris = {};
 
 	// Terrain
-	createQuad({ (double)pos.x, 0, (double)pos.y }, { (double)pos.x + 1, 0, (double)pos.y }, { (double)pos.x, 0, (double)pos.y + 1 }, { (double)pos.x + 1, 0, (double)pos.y + 1 }, newTris, textureData);
+	createQuad({ (double)pos.x, (double)height, (double)pos.y }, { (double)pos.x + 1, (double)height, (double)pos.y }, { (double)pos.x, (double)height, (double)pos.y + 1 }, { (double)pos.x + 1, (double)height, (double)pos.y + 1 }, newTris, textureData);
+
+	for (int8_t x = neighborHeights[0][1]; x <= height; x++)
+	{
+		createQuad({ (double)pos.x, (double)x, (double)pos.y }, { (double)pos.x, (double)x, (double)pos.y + 1 }, { (double)pos.x, (double)x - 1, (double)pos.y }, { (double)pos.x, (double)x - 1, (double)pos.y + 1 }, newTris, textureData);
+	}
+	for (int8_t x = neighborHeights[1][2]; x <= height; x++)
+	{
+		createQuad({ (double)pos.x, (double)x, (double)pos.y + 1 }, { (double)pos.x + 1, (double)x, (double)pos.y + 1 }, { (double)pos.x, (double)x - 1, (double)pos.y + 1 }, { (double)pos.x + 1, (double)x - 1, (double)pos.y + 1 }, newTris, textureData);
+	}
 
 	tile.trisPosSize = appendTris(mainData, newTris);
 }
@@ -127,8 +162,3 @@ uint64_t getSystemTime()
 {
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
-
-/*size_t getFilenameStringLengthMinusExtension(const char* filename)
-{
-
-}*/
