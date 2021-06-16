@@ -4,7 +4,7 @@
 #include <iostream>
 #include <filesystem>
 
-const Version currentVersion = {1, 1, 0, 0};
+const Version currentVersion = {2, 1, 0, 0};
 
 int main()
 {
@@ -96,7 +96,8 @@ int main()
             do
             {
                 map[x][y].groundMaterial = (GroundMaterial)(rand() % 2);
-                map[x][y].height = rand() % 2;
+                map[x][y].height = rand() % 3 - 1;
+                //map[x][y].height = rand() % 10 < 1;
                 y++;
             } while (y != 0);
             x++;
@@ -199,7 +200,7 @@ int main()
         {
             mainData.triangles = {};
             mainData.freeTriangles = {};
-            uint8_t x = 0;
+            uint8_t x = 255;
             do
             {
                 uint8_t y = 0;
@@ -208,8 +209,8 @@ int main()
                     drawTile(mainData, map[x][y], { x, y }, map);
                     y++;
                 } while (y != 0);
-                x++;
-            } while (x != 0);
+                x--;
+            } while (x != 255);
             mainData.redrawMap = 0;
         }
 

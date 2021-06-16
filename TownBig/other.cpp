@@ -144,15 +144,163 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 	std::vector<TriPoint> newTris = {};
 
 	// Terrain
-	createQuad({ (double)pos.x, (double)height, (double)pos.y }, { (double)pos.x + 1, (double)height, (double)pos.y }, { (double)pos.x, (double)height, (double)pos.y + 1 }, { (double)pos.x + 1, (double)height, (double)pos.y + 1 }, newTris, textureData);
+
+	createQuad(
+		{ (double)pos.x, (double)height, (double)pos.y },
+		{ (double)pos.x + 1, (double)height, (double)pos.y },
+		{ (double)pos.x, (double)height, (double)pos.y + 1 },
+		{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
+		newTris, textureData);
+
+	// Slopes
+
+	bool drawSlope = 1;
+
+	if (drawSlope)
+	{
+		if (neighborHeights[1][0] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x, (double)height + 1, (double)pos.y },
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+		if (neighborHeights[2][1] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y },
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+		if (neighborHeights[1][2] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x + 1, (double)height, (double)pos.y },
+				{ (double)pos.x, (double)height, (double)pos.y },
+				newTris, textureData);
+		}
+		if (neighborHeights[0][1] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height + 1, (double)pos.y },
+				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x + 1, (double)height, (double)pos.y },
+				newTris, textureData);
+		}
+
+		if (neighborHeights[1][0] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x, (double)height + 1, (double)pos.y },
+				{ (double)pos.x, (double)height + 1, (double)pos.y },
+				{ (double)pos.x, (double)height, (double)pos.y },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+		if (neighborHeights[2][1] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+		if (neighborHeights[1][2] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y },
+				newTris, textureData);
+		}
+		if (neighborHeights[0][1] == height + 1)
+		{
+			createQuad(
+				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+
+		if (neighborHeights[0][0] == height + 1 && neighborHeights[0][1] == height && neighborHeights[1][0] == height)
+		{
+			createQuad(
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height + 1, (double)pos.y },
+				{ (double)pos.x + 1, (double)height, (double)pos.y },
+				{ (double)pos.x + 1, (double)height, (double)pos.y },
+				newTris, textureData);
+		}
+		if (neighborHeights[2][0] == height + 1 && neighborHeights[1][0] == height && neighborHeights[2][1] == height)
+		{
+			createQuad(
+				{ (double)pos.x, (double)height, (double)pos.y },
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y },
+				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+		if (neighborHeights[2][2] == height + 1 && neighborHeights[2][1] == height && neighborHeights[1][2] == height)
+		{
+			createQuad(
+				{ (double)pos.x + 1, (double)height, (double)pos.y },
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+		if (neighborHeights[2][2] == height + 1 && neighborHeights[2][1] == height && neighborHeights[1][2] == height)
+		{
+			createQuad(
+				{ (double)pos.x + 1, (double)height, (double)pos.y },
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
+		}
+	}
+
+	// Clifs
 
 	for (int8_t x = neighborHeights[0][1]; x <= height; x++)
 	{
-		createQuad({ (double)pos.x, (double)x, (double)pos.y }, { (double)pos.x, (double)x, (double)pos.y + 1 }, { (double)pos.x, (double)x - 1, (double)pos.y }, { (double)pos.x, (double)x - 1, (double)pos.y + 1 }, newTris, textureData);
+		createQuad(
+			{ (double)pos.x, (double)x, (double)pos.y },
+			{ (double)pos.x, (double)x, (double)pos.y + 1 },
+			{ (double)pos.x, (double)x - 1, (double)pos.y },
+			{ (double)pos.x, (double)x - 1, (double)pos.y + 1 },
+			newTris, textureData);
 	}
 	for (int8_t x = neighborHeights[1][2]; x <= height; x++)
 	{
-		createQuad({ (double)pos.x, (double)x, (double)pos.y + 1 }, { (double)pos.x + 1, (double)x, (double)pos.y + 1 }, { (double)pos.x, (double)x - 1, (double)pos.y + 1 }, { (double)pos.x + 1, (double)x - 1, (double)pos.y + 1 }, newTris, textureData);
+		createQuad(
+			{ (double)pos.x, (double)x, (double)pos.y + 1 },
+			{ (double)pos.x + 1, (double)x, (double)pos.y + 1 },
+			{ (double)pos.x, (double)x - 1, (double)pos.y + 1 },
+			{ (double)pos.x + 1, (double)x - 1, (double)pos.y + 1 },
+			newTris, textureData);
+	}
+
+	// Water
+
+	if (height < 0)
+	{
+		createQuad(
+			{ (double)pos.x, -0.0625, (double)pos.y },
+			{ (double)pos.x + 1, -0.0625, (double)pos.y },
+			{ (double)pos.x, -0.0625, (double)pos.y + 1 },
+			{ (double)pos.x + 1, -0.0625, (double)pos.y + 1 },
+			newTris, mainData.textureDatas[(size_t)TextureID::water]);
 	}
 
 	tile.trisPosSize = appendTris(mainData, newTris);
