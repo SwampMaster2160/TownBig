@@ -9,3 +9,4 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 void deleteTris(MainData& mainData, PosSize posSize);
 uint64_t getSystemTime();
 const char* textureNames[];
+void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, uint64_t seed);

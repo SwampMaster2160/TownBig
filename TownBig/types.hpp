@@ -92,7 +92,7 @@ struct MainData
 
 enum class Inputs : uint8_t
 {
-	fullScreen, mainClick, pan, windowResize, zoomIn, zoomOut, size
+	fullScreen, mainClick, pan, windowResize, zoomIn, zoomOut, f1, f2, f3, f4, size
 };
 
 enum class GroundMaterial : uint8_t
@@ -140,5 +140,10 @@ struct Map
 
 enum class TextureID : uint8_t
 {
-	grass, water, sand, rock, snow, select, debug, size
+	grass, water, sand, rock, snow, select, debug, waterSide, size
+};
+
+enum class MapTerrainType : uint8_t
+{
+	regular, flatGrass, flatWater, swamp
 };

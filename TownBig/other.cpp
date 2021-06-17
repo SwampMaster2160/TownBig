@@ -100,10 +100,10 @@ void createQuad(sf::Vector3<double> pos0, sf::Vector3<double> pos1, sf::Vector3<
 {
 	newTris.push_back({ pos0.x, pos0.y, pos0.z, textureData.xStart, textureData.yStart });
 	newTris.push_back({ pos1.x, pos1.y, pos1.z, textureData.xEnd,   textureData.yStart });
-	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd   });
+	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd });
 	newTris.push_back({ pos0.x, pos0.y, pos0.z, textureData.xStart, textureData.yStart });
-	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd   });
-	newTris.push_back({ pos2.x, pos2.y, pos2.z, textureData.xStart, textureData.yEnd   });
+	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd });
+	newTris.push_back({ pos2.x, pos2.y, pos2.z, textureData.xStart, textureData.yEnd });
 }
 
 bool isTileInMap(sf::Vector2<int16_t> pos)
@@ -166,6 +166,12 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
 				newTris, textureData);
+			createQuad(
+				{ (double)pos.x, (double)height + 1, (double)pos.y },
+				{ (double)pos.x, (double)height + 1, (double)pos.y },
+				{ (double)pos.x, (double)height, (double)pos.y },
+				{ (double)pos.x, (double)height, (double)pos.y + 1 },
+				newTris, textureData);
 		}
 		if (neighborHeights[2][1] == height + 1)
 		{
@@ -175,6 +181,12 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x, (double)height, (double)pos.y },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
 				newTris, textureData);
+			createQuad(
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 0.9999 },
+				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 0.9999 },
+				{ (double)pos.x + 1, (double)height, (double)pos.y + 0.9999 },
+				{ (double)pos.x, (double)height, (double)pos.y + 0.9999 },
+				newTris, textureData);
 		}
 		if (neighborHeights[1][2] == height + 1)
 		{
@@ -183,6 +195,12 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y },
 				{ (double)pos.x, (double)height, (double)pos.y },
+				newTris, textureData);
+			createQuad(
+				{ (double)pos.x + 0.0001, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x + 0.0001, (double)height + 1, (double)pos.y + 1 },
+				{ (double)pos.x + 0.0001, (double)height, (double)pos.y + 1 },
+				{ (double)pos.x + 0.0001, (double)height, (double)pos.y },
 				newTris, textureData);
 		}
 		if (neighborHeights[0][1] == height + 1)
@@ -193,37 +211,6 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y },
 				newTris, textureData);
-		}
-
-		if (neighborHeights[1][0] == height + 1)
-		{
-			createQuad(
-				{ (double)pos.x, (double)height + 1, (double)pos.y },
-				{ (double)pos.x, (double)height + 1, (double)pos.y },
-				{ (double)pos.x, (double)height, (double)pos.y },
-				{ (double)pos.x, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
-		}
-		if (neighborHeights[2][1] == height + 1)
-		{
-			createQuad(
-				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
-				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
-				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
-				{ (double)pos.x, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
-		}
-		if (neighborHeights[1][2] == height + 1)
-		{
-			createQuad(
-				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
-				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
-				{ (double)pos.x, (double)height, (double)pos.y + 1 },
-				{ (double)pos.x, (double)height, (double)pos.y },
-				newTris, textureData);
-		}
-		if (neighborHeights[0][1] == height + 1)
-		{
 			createQuad(
 				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
@@ -303,10 +290,95 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 			newTris, mainData.textureDatas[(size_t)TextureID::water]);
 	}
 
+	if (pos.x == 0)
+	{
+		for (int8_t x = height + 1; x < 1; x++)
+		{
+			if (x == 0)
+			{
+				createQuad(
+					{ (double)0.002, (double)x, (double)pos.y },
+					{ (double)0.002, (double)x, (double)pos.y + 1 },
+					{ (double)0.002, (double)x - 1, (double)pos.y },
+					{ (double)0.002, (double)x - 1, (double)pos.y + 1 },
+					newTris, mainData.textureDatas[(size_t)TextureID::waterSide]);
+			}
+			else
+			{
+				createQuad(
+					{ (double)0.0002, (double)x, (double)pos.y },
+					{ (double)0.0002, (double)x, (double)pos.y + 1 },
+					{ (double)0.0002, (double)x - 1, (double)pos.y },
+					{ (double)0.0002, (double)x - 1, (double)pos.y + 1 },
+					newTris, mainData.textureDatas[(size_t)TextureID::water]);
+			}
+		}
+	}
+
+	if (pos.y == 255)
+	{
+		for (int8_t x = height + 1; x < 1; x++)
+		{
+			if (x == 0)
+			{
+				createQuad(
+					{ (double)pos.x, (double)x, (double)255.9998 },
+					{ (double)pos.x + 1, (double)x, (double)255.9998 },
+					{ (double)pos.x, (double)x - 1, (double)255.9998 },
+					{ (double)pos.x + 1, (double)x - 1, (double)255.9998 },
+					newTris, mainData.textureDatas[(size_t)TextureID::waterSide]);
+			}
+			else
+			{
+				createQuad(
+					{ (double)pos.x, (double)x, (double)255.9998 },
+					{ (double)pos.x + 1, (double)x, (double)255.9998 },
+					{ (double)pos.x, (double)x - 1, (double)255.9998 },
+					{ (double)pos.x + 1, (double)x - 1, (double)255.9998 },
+					newTris, mainData.textureDatas[(size_t)TextureID::water]);
+			}
+		}
+	}
+
 	tile.trisPosSize = appendTris(mainData, newTris);
 }
 
 uint64_t getSystemTime()
 {
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
+void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, uint64_t seed)
+{
+	mainData.redrawMap = 1;
+	uint8_t x = 0;
+	do
+	{
+		uint8_t y = 0;
+		do
+		{
+			switch (mapTerrainType)
+			{
+			case MapTerrainType::regular:
+				break;
+			case MapTerrainType::swamp:
+			{
+				bool height = rand() % 2;
+				map[x][y].groundMaterial = height ? GroundMaterial::grass : GroundMaterial::sand;
+				map[x][y].height = height - 1;
+				break;
+			}
+			case MapTerrainType::flatGrass:
+				map[x][y].groundMaterial = GroundMaterial::grass;
+				map[x][y].height = 0;
+				break;
+			case MapTerrainType::flatWater:
+				map[x][y].groundMaterial = GroundMaterial::sand;
+				map[x][y].height = -1;
+				break;
+			}
+			y++;
+		} while (y != 0);
+		x++;
+	} while (x != 0);
 }

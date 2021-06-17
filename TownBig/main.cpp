@@ -4,7 +4,7 @@
 #include <iostream>
 #include <filesystem>
 
-const Version currentVersion = {2, 1, 0, 0};
+const Version currentVersion = {3, 1, 0, 0};
 
 int main()
 {
@@ -83,26 +83,10 @@ int main()
 
     // Map
 
-    mainData.redrawMap = 1;
     std::vector<sf::Vector2<uint8_t>> redrawTileQueue;
     Map& map = *(new Map);
 
-
-    {
-        uint8_t x = 0;
-        do
-        {
-            uint8_t y = 0;
-            do
-            {
-                map[x][y].groundMaterial = (GroundMaterial)(rand() % 2);
-                map[x][y].height = rand() % 3 - 1;
-                //map[x][y].height = rand() % 10 < 1;
-                y++;
-            } while (y != 0);
-            x++;
-        } while (x != 0);
-    }
+    generateMap(mainData, map, MapTerrainType::swamp, rand());
 
     // Main game loop
 
@@ -138,6 +122,10 @@ int main()
         // Get inputs
 
         inputs[(uint8_t)Inputs::fullScreen] = sf::Keyboard::isKeyPressed(sf::Keyboard::F11);
+        inputs[(uint8_t)Inputs::f1] = sf::Keyboard::isKeyPressed(sf::Keyboard::F1);
+        inputs[(uint8_t)Inputs::f2] = sf::Keyboard::isKeyPressed(sf::Keyboard::F2);
+        inputs[(uint8_t)Inputs::f3] = sf::Keyboard::isKeyPressed(sf::Keyboard::F3);
+        inputs[(uint8_t)Inputs::f4] = sf::Keyboard::isKeyPressed(sf::Keyboard::F4);
         inputs[(uint8_t)Inputs::mainClick] = sf::Mouse::isButtonPressed(sf::Mouse::Left);
         inputs[(uint8_t)Inputs::pan] = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 
@@ -180,12 +168,17 @@ int main()
 
         // Game logic
 
-        for (uint8_t x = 0; x < 10; x++)
+        /*for (uint8_t x = 0; x < 10; x++)
         {
             sf::Vector2<uint8_t> pos = { (uint8_t)rand() , (uint8_t)rand() };
             map[pos.x][pos.y].groundMaterial = (GroundMaterial)(rand() % 2);
             redrawTileQueue.push_back(pos);
-        }
+        }*/
+
+        if (inputs[(uint8_t)Inputs::f1]) generateMap(mainData, map, MapTerrainType::regular, rand());
+        if (inputs[(uint8_t)Inputs::f2]) generateMap(mainData, map, MapTerrainType::swamp, rand());
+        if (inputs[(uint8_t)Inputs::f3]) generateMap(mainData, map, MapTerrainType::flatGrass, rand());
+        if (inputs[(uint8_t)Inputs::f4]) generateMap(mainData, map, MapTerrainType::flatWater, rand());
 
         // Render
 
