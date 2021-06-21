@@ -80,6 +80,21 @@ struct TextureData
 	double yEnd;
 };
 
+enum class TextureID : uint8_t
+{
+	grass, water, sand, rock, snow, select, debug, waterSide, size
+};
+
+enum class GroundMaterial : uint8_t
+{
+	grass, sand, rock, snow, size
+};
+
+struct GroundMaterialData
+{
+	TextureID texture;
+};
+
 struct MainData
 {
 	bool redrawMap;
@@ -88,16 +103,12 @@ struct MainData
 	std::vector<TriPoint> triangles;
 	std::vector<PosSize> freeTriangles;
 	std::vector<TextureData> textureDatas;
+	GroundMaterialData groundMaterialDatas[(uint8_t)GroundMaterial::size];
 };
 
 enum class Inputs : uint8_t
 {
 	fullScreen, mainClick, pan, windowResize, zoomIn, zoomOut, f1, f2, f3, f4, size
-};
-
-enum class GroundMaterial : uint8_t
-{
-	grass, sand, size
 };
 
 struct Tile
@@ -136,11 +147,6 @@ struct Map
 	{
 		return tiles[x];
 	}
-};
-
-enum class TextureID : uint8_t
-{
-	grass, water, sand, rock, snow, select, debug, waterSide, size
 };
 
 enum class MapTerrainType : uint8_t

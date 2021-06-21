@@ -10,3 +10,4 @@ void deleteTris(MainData& mainData, PosSize posSize);
 uint64_t getSystemTime();
 const char* textureNames[];
 void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, uint64_t seed);
+const Version currentVersion = { 4, 1, 0, 0 };

@@ -112,6 +112,37 @@ bool isTileInMap(sf::Vector2<int16_t> pos)
 	return 1;
 }
 
+uint8_t random(uint64_t seed, uint64_t counter)
+{
+	uint64_t a = (seed * counter * counter);
+	uint64_t b = (seed * seed * counter);
+	uint8_t c = (a * b) % 7;
+	return (a + b + c);
+}
+
+uint8_t random(uint64_t seed, uint64_t x, uint64_t y, uint64_t z)
+{
+	return random(seed, x + y * 0xFFFFEEE + z * 0x100000000000000);
+}
+
+uint64_t random64(uint64_t seed, uint64_t counter)
+{
+	return (uint64_t)random(seed, counter) + (uint64_t)random(seed, counter + 1) * 0x100 + (uint64_t)random(seed, counter + 2) * 0x10000 + (uint64_t)random(seed, counter + 3) * 0x1000000 + (uint64_t)random(seed, counter + 4) * 0x100000000 + (uint64_t)random(seed, counter + 5) * 0x10000000000 + (uint64_t)random(seed, counter + 6) * 0x1000000000000 + (uint64_t)random(seed, counter + 7) * 0x100000000000000;
+}
+
+double filter(sf::Vector2<double> pos, sf::Vector2<double> cPos, double size, double h0, double h1, double h2, double h3)
+{
+	double g0 = (h1 - h0) / size;
+	double p0 = g0 * pos.x + (h0 - g0 * cPos.x);
+	double g1 = (h3 - h2) / size;
+	double p1 = g1 * pos.x + (h2 - g1 * cPos.x);
+
+	double g2 = (p1 - p0) / size;
+	double p2 = g2 * pos.y + (p0 - g2 * cPos.y);
+
+	return p2;
+}
+
 void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map)
 {
 	if (!mainData.redrawMap)
@@ -138,9 +169,9 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 		}
 	}
 
-	uint8_t type = (uint8_t)tile.groundMaterial * 2;
+	GroundMaterial groundMaterial = tile.groundMaterial;
 	int8_t height = tile.height;
-	TextureData& textureData = mainData.textureDatas[type];
+	TextureData& textureData = mainData.textureDatas[(size_t)mainData.groundMaterialDatas[(size_t)groundMaterial].texture];
 	std::vector<TriPoint> newTris = {};
 
 	// Terrain
@@ -350,6 +381,7 @@ uint64_t getSystemTime()
 
 void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, uint64_t seed)
 {
+	srand(seed);
 	mainData.redrawMap = 1;
 	uint8_t x = 0;
 	do
@@ -360,7 +392,38 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 			switch (mapTerrainType)
 			{
 			case MapTerrainType::regular:
+			{
+				double elevation = 0;
+
+				for (uint8_t z = 1; z < 8; z++)
+				{
+					uint8_t c = pow(2, z);
+					uint8_t x1 = floor(x / (256. / c));
+					uint8_t y1 = floor(y / (256. / c));
+					elevation += filter({ (double)x, (double)y }, { x1 * (256. / c), y1 * (256. / c) }, (256. / c), random(seed, x1, y1, z) / (c * 2), random(seed, x1 + 1, y1, z) / (c * 2), random(seed, x1, y1 + 1, z) / (c * 2), random(seed, x1 + 1, y1 + 1, z) / (c * 2)) - (256 / (c * 4));
+					
+					int8_t elevation1 = (int8_t)elevation;
+					map[x][y].height = elevation1;
+
+					GroundMaterial groundMaterial = GroundMaterial::grass;
+
+					if (elevation1 < 1)
+					{
+						groundMaterial = GroundMaterial::sand;
+					}
+					if (elevation1 > 20)
+					{
+						groundMaterial = GroundMaterial::rock;
+					}
+					if (elevation1 > 25)
+					{
+						groundMaterial = GroundMaterial::snow;
+					}
+					map[x][y].groundMaterial = groundMaterial;
+				}
+
 				break;
+			}
 			case MapTerrainType::swamp:
 			{
 				bool height = rand() % 2;

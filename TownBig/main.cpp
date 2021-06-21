@@ -4,8 +4,6 @@
 #include <iostream>
 #include <filesystem>
 
-const Version currentVersion = {3, 1, 0, 0};
-
 int main()
 {
     MainData mainData;
@@ -81,12 +79,17 @@ int main()
     textureMap.setSrgb(false);
     textureMap.loadFromImage(image);
 
+    mainData.groundMaterialDatas[(size_t)GroundMaterial::grass].texture = TextureID::grass;
+    mainData.groundMaterialDatas[(size_t)GroundMaterial::sand].texture = TextureID::sand;
+    mainData.groundMaterialDatas[(size_t)GroundMaterial::rock].texture = TextureID::rock;
+    mainData.groundMaterialDatas[(size_t)GroundMaterial::snow].texture = TextureID::snow;
+
     // Map
 
     std::vector<sf::Vector2<uint8_t>> redrawTileQueue;
     Map& map = *(new Map);
 
-    generateMap(mainData, map, MapTerrainType::swamp, rand());
+    generateMap(mainData, map, MapTerrainType::regular, rand());
 
     // Main game loop
 
