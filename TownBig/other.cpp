@@ -169,7 +169,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 		}
 	}
 
-	GroundMaterial groundMaterial = tile.groundMaterial;
+	GroundMaterialEnum groundMaterial = tile.groundMaterial;
 	int8_t height = tile.height;
 	TextureData& textureData = mainData.textureDatas[(size_t)mainData.groundMaterialDatas[(size_t)groundMaterial].texture];
 	std::vector<TriPoint> newTris = {};
@@ -185,7 +185,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 
 	// Slopes
 
-	bool drawSlope = 1;
+	bool drawSlope = tile.landOcc.type == LandOccEnum::none;
 
 	if (drawSlope)
 	{
@@ -371,6 +371,36 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 		}
 	}
 
+	// Land Occ
+
+	switch (tile.landOcc.type)
+	{
+	case LandOccEnum::debug:
+	{
+		double buildHeight = height > 0 ? (double)height : 0;
+		createQuad(
+			{ (double)pos.x, buildHeight + 1, (double)pos.y + 0.5 },
+			{ (double)pos.x + 1, buildHeight + 1, (double)pos.y + 0.5 },
+			{ (double)pos.x, buildHeight, (double)pos.y + 0.5 },
+			{ (double)pos.x + 1, buildHeight, (double)pos.y + 0.5 },
+			newTris, mainData.textureDatas[(size_t)TextureID::debug]);
+		break;
+	}
+	case LandOccEnum::foliage:
+	{
+		double buildHeight = (double)height;
+		createQuad(
+			{ (double)pos.x, buildHeight + 1, (double)pos.y + 0.5 },
+			{ (double)pos.x + 1, buildHeight + 1, (double)pos.y + 0.5 },
+			{ (double)pos.x, buildHeight, (double)pos.y + 0.5 },
+			{ (double)pos.x + 1, buildHeight, (double)pos.y + 0.5 },
+			newTris, mainData.textureDatas[(size_t)(mainData.foliageDatas[*(uint8_t*)&tile.landOcc.data].texture)]);
+		break;
+	}
+	}
+
+	// End
+
 	tile.trisPosSize = appendTris(mainData, newTris);
 }
 
@@ -401,25 +431,47 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 					uint8_t x1 = floor(x / (256. / c));
 					uint8_t y1 = floor(y / (256. / c));
 					elevation += filter({ (double)x, (double)y }, { x1 * (256. / c), y1 * (256. / c) }, (256. / c), random(seed, x1, y1, z) / (c * 2), random(seed, x1 + 1, y1, z) / (c * 2), random(seed, x1, y1 + 1, z) / (c * 2), random(seed, x1 + 1, y1 + 1, z) / (c * 2)) - (256 / (c * 4));
-					
-					int8_t elevation1 = (int8_t)elevation;
-					map[x][y].height = elevation1;
+				}
 
-					GroundMaterial groundMaterial = GroundMaterial::grass;
+				int8_t elevation1 = (int8_t)elevation;
+				map[x][y].height = elevation1;
 
-					if (elevation1 < 1)
+				GroundMaterialEnum groundMaterial = GroundMaterialEnum::grass;
+
+				if (elevation1 < 1)
+				{
+					groundMaterial = GroundMaterialEnum::sand;
+				}
+				if (elevation1 > 20)
+				{
+					groundMaterial = GroundMaterialEnum::rock;
+				}
+				if (elevation1 > 25)
+				{
+					groundMaterial = GroundMaterialEnum::snow;
+				}
+				map[x][y].groundMaterial = groundMaterial;
+				map[x][y].landOcc.type = LandOccEnum::none;
+				//random(seed, x1, y1, z)
+				/*if (random(seed, x, y, 10) == 0)
+				{
+					map[x][y].landOcc.type = LandOccEnum::debug;
+				}*/
+				if (elevation1 > 1 && elevation1 < 20)
+				{
+					if (random(seed, x, y, 10) == 0)
 					{
-						groundMaterial = GroundMaterial::sand;
+						map[x][y].landOcc.type = LandOccEnum::foliage;
+						*(FoliageEnum*)(&map[x][y].landOcc.data) = FoliageEnum::pineTree;
 					}
-					if (elevation1 > 20)
+				}
+				if (elevation1 < 1)
+				{
+					if (random(seed, x, y, 10) == 0)
 					{
-						groundMaterial = GroundMaterial::rock;
+						map[x][y].landOcc.type = LandOccEnum::foliage;
+						*(FoliageEnum*)(&map[x][y].landOcc.data) = FoliageEnum::rockPile;
 					}
-					if (elevation1 > 25)
-					{
-						groundMaterial = GroundMaterial::snow;
-					}
-					map[x][y].groundMaterial = groundMaterial;
 				}
 
 				break;
@@ -427,17 +479,20 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 			case MapTerrainType::swamp:
 			{
 				bool height = rand() % 2;
-				map[x][y].groundMaterial = height ? GroundMaterial::grass : GroundMaterial::sand;
+				map[x][y].groundMaterial = height ? GroundMaterialEnum::grass : GroundMaterialEnum::sand;
 				map[x][y].height = height - 1;
+				map[x][y].landOcc.type = LandOccEnum::none;
 				break;
 			}
 			case MapTerrainType::flatGrass:
-				map[x][y].groundMaterial = GroundMaterial::grass;
+				map[x][y].groundMaterial = GroundMaterialEnum::grass;
 				map[x][y].height = 0;
+				map[x][y].landOcc.type = LandOccEnum::none;
 				break;
 			case MapTerrainType::flatWater:
-				map[x][y].groundMaterial = GroundMaterial::sand;
+				map[x][y].groundMaterial = GroundMaterialEnum::sand;
 				map[x][y].height = -1;
+				map[x][y].landOcc.type = LandOccEnum::none;
 				break;
 			}
 			y++;

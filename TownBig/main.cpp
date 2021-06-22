@@ -79,10 +79,13 @@ int main()
     textureMap.setSrgb(false);
     textureMap.loadFromImage(image);
 
-    mainData.groundMaterialDatas[(size_t)GroundMaterial::grass].texture = TextureID::grass;
-    mainData.groundMaterialDatas[(size_t)GroundMaterial::sand].texture = TextureID::sand;
-    mainData.groundMaterialDatas[(size_t)GroundMaterial::rock].texture = TextureID::rock;
-    mainData.groundMaterialDatas[(size_t)GroundMaterial::snow].texture = TextureID::snow;
+    mainData.groundMaterialDatas[(size_t)GroundMaterialEnum::grass].texture = TextureID::grass;
+    mainData.groundMaterialDatas[(size_t)GroundMaterialEnum::sand].texture = TextureID::sand;
+    mainData.groundMaterialDatas[(size_t)GroundMaterialEnum::rock].texture = TextureID::rock;
+    mainData.groundMaterialDatas[(size_t)GroundMaterialEnum::snow].texture = TextureID::snow;
+
+    mainData.foliageDatas[(size_t)FoliageEnum::pineTree].texture = TextureID::pineTree;
+    mainData.foliageDatas[(size_t)FoliageEnum::rockPile].texture = TextureID::rockPile;
 
     // Map
 

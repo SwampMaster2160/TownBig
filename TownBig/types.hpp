@@ -82,10 +82,10 @@ struct TextureData
 
 enum class TextureID : uint8_t
 {
-	grass, water, sand, rock, snow, select, debug, waterSide, size
+	grass, water, sand, rock, snow, select, debug, waterSide, pineTree, rockPile, size
 };
 
-enum class GroundMaterial : uint8_t
+enum class GroundMaterialEnum : uint8_t
 {
 	grass, sand, rock, snow, size
 };
@@ -93,6 +93,27 @@ enum class GroundMaterial : uint8_t
 struct GroundMaterialData
 {
 	TextureID texture;
+};
+
+enum class FoliageEnum : uint8_t
+{
+	pineTree, rockPile, size
+};
+
+struct FoliageData
+{
+	TextureID texture;
+};
+
+enum class LandOccEnum : uint8_t
+{
+	none = 0, foliage, debug, size
+};
+
+struct LandOcc
+{
+	LandOccEnum type;
+	char data;
 };
 
 struct MainData
@@ -103,7 +124,8 @@ struct MainData
 	std::vector<TriPoint> triangles;
 	std::vector<PosSize> freeTriangles;
 	std::vector<TextureData> textureDatas;
-	GroundMaterialData groundMaterialDatas[(uint8_t)GroundMaterial::size];
+	GroundMaterialData groundMaterialDatas[(uint8_t)GroundMaterialEnum::size];
+	FoliageData foliageDatas[(uint8_t)FoliageEnum::size];
 };
 
 enum class Inputs : uint8_t
@@ -111,12 +133,22 @@ enum class Inputs : uint8_t
 	fullScreen, mainClick, pan, windowResize, zoomIn, zoomOut, f1, f2, f3, f4, size
 };
 
-struct Tile
+union Tile
 {
-	PosSize trisPosSize;
+	struct
+	{
+		PosSize trisPosSize;
 
-	GroundMaterial groundMaterial;
-	int8_t height;
+		GroundMaterialEnum groundMaterial;
+		int8_t height;
+		LandOcc landOcc;
+	};
+	uint8_t data[64];
+
+	Tile()
+	{
+
+	}
 };
 
 struct TileRow

@@ -1,7 +1,7 @@
 ﻿  other.cpp
 C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(120,16): warning C4244: 'return': conversion from 'uint64_t' to 'uint8_t', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(384,8): warning C4244: 'argument': conversion from 'uint64_t' to 'unsigned int', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(400,16): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(401,17): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(402,17): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
+C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(414,8): warning C4244: 'argument': conversion from 'uint64_t' to 'unsigned int', possible loss of data
+C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(430,16): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
+C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(431,17): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
+C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(432,17): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
   TownBig.vcxproj -> C:\Users\Jaxon\source\repos\TownBig\x64\Debug\TownBig.exe
