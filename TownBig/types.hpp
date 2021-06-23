@@ -82,7 +82,7 @@ struct TextureData
 
 enum class TextureID : uint8_t
 {
-	grass, water, sand, rock, snow, select, debug, waterSide, pineTree, rockPile, size
+	grass, water, sand, rock, snow, select, debug, waterSide, pineTree, rockPile, oakTree, size
 };
 
 enum class GroundMaterialEnum : uint8_t
@@ -97,7 +97,7 @@ struct GroundMaterialData
 
 enum class FoliageEnum : uint8_t
 {
-	pineTree, rockPile, size
+	pineTree, rockPile, oakTree, size
 };
 
 struct FoliageData
@@ -116,16 +116,49 @@ struct LandOcc
 	char data;
 };
 
+enum class ScreenPosHAlign : uint8_t
+{
+	l, c, r
+};
+
+enum class ScreenPosVAlign : uint8_t
+{
+	t, c, b
+};
+
 struct MainData
 {
 	bool redrawMap;
 	sf::Vector2u windowedWindowSize;
+	sf::Vector2u windowSize;
+	uint16_t guiScale;
 	bool fullScreen;
 	std::vector<TriPoint> triangles;
 	std::vector<PosSize> freeTriangles;
 	std::vector<TextureData> textureDatas;
 	GroundMaterialData groundMaterialDatas[(uint8_t)GroundMaterialEnum::size];
 	FoliageData foliageDatas[(uint8_t)FoliageEnum::size];
+};
+
+struct ScreenPos
+{
+	sf::Vector2f pos;
+	ScreenPosHAlign hAlign;
+	ScreenPosVAlign vAlign;
+
+	ScreenPos(sf::Vector2f pos,	ScreenPosHAlign hAlign,	ScreenPosVAlign vAlign)
+	{
+		this->pos = pos;
+		this->hAlign = hAlign;
+		this->vAlign = vAlign;
+	}
+
+	sf::Vector2f toVec2(MainData& mainData)
+	{
+		float x = (uint8_t)hAlign * mainData.windowSize.x / 2. + pos.x * mainData.guiScale;
+		float y = (uint8_t)vAlign * mainData.windowSize.y / 2. + pos.y * mainData.guiScale;
+		return { x, y };
+	}
 };
 
 enum class Inputs : uint8_t

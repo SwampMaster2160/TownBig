@@ -10,4 +10,5 @@ void deleteTris(MainData& mainData, PosSize posSize);
 uint64_t getSystemTime();
 const char* textureNames[];
 void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, uint64_t seed);
-const Version currentVersion = { 5, 1, 0, 0 };
+const Version currentVersion = { 0xFFFF, 1, 0, 0 };
+void renderRect(sf::RenderWindow& window, MainData& windowData, ScreenPos pos, ScreenPos end, sf::Color color);

@@ -86,6 +86,7 @@ int main()
 
     mainData.foliageDatas[(size_t)FoliageEnum::pineTree].texture = TextureID::pineTree;
     mainData.foliageDatas[(size_t)FoliageEnum::rockPile].texture = TextureID::rockPile;
+    mainData.foliageDatas[(size_t)FoliageEnum::oakTree].texture = TextureID::oakTree;
 
     // Map
 
@@ -236,6 +237,15 @@ int main()
         glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(GLdouble), t1 + 4);
         glDrawArrays(GL_TRIANGLES, 0, mainData.triangles.size());
 
+        // GUI
+
+        window.pushGLStates();
+
+        //ScreenPos pos = ScreenPos({ -128, -128 }, ScreenPosHAlign::c, ScreenPosVAlign::c);
+        //ScreenPos end = ScreenPos({ 128, 128 }, ScreenPosHAlign::c, ScreenPosVAlign::c);
+        //renderRect(window, mainData, pos, end, sf::Color::Red);
+
+        window.popGLStates();
         window.display();
 
         // Loop End

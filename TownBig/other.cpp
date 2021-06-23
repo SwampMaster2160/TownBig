@@ -22,6 +22,9 @@ void initWindow(sf::RenderWindow& window, MainData& windowData, bool firstTime)
 		window.create({ windowData.windowedWindowSize.x, windowData.windowedWindowSize.y }, "TownBig", sf::Style::Default, contextSettings);
 	}
 
+	windowData.windowSize = window.getSize();
+	windowData.guiScale = windowData.windowSize.y / 256;
+
 	glDisable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
@@ -462,10 +465,10 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 					if (random(seed, x, y, 10) == 0)
 					{
 						map[x][y].landOcc.type = LandOccEnum::foliage;
-						*(FoliageEnum*)(&map[x][y].landOcc.data) = FoliageEnum::pineTree;
+						*(FoliageEnum*)(&map[x][y].landOcc.data) = random(seed, x, y, 11) < 128 ? FoliageEnum::pineTree : FoliageEnum::oakTree;
 					}
 				}
-				if (elevation1 < 1)
+				if (elevation1 < 1 || elevation1 > 20 && elevation1 < 25)
 				{
 					if (random(seed, x, y, 10) == 0)
 					{
@@ -499,4 +502,13 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 		} while (y != 0);
 		x++;
 	} while (x != 0);
+}
+
+void renderRect(sf::RenderWindow& window, MainData& mainData, ScreenPos pos, ScreenPos end, sf::Color color)
+{
+	sf::RectangleShape rect;
+	rect.setPosition(pos.toVec2(mainData));
+	rect.setSize(end.toVec2(mainData) - pos.toVec2(mainData));
+	rect.setFillColor(color);
+	window.draw(rect);
 }
