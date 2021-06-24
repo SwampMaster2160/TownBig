@@ -2,6 +2,13 @@
 #include <iostream>
 #include <chrono>
 
+sf::Vector2f toVec2(ScreenPos screenPos, MainData& mainData)
+{
+	float x = ((uint8_t)screenPos.hAlign) * mainData.windowSize.x / 2. + screenPos.pos.x * mainData.guiScale;
+	float y = ((uint8_t)screenPos.vAlign) * mainData.windowSize.y / 2. + screenPos.pos.y * mainData.guiScale;
+	return { x, y };
+}
+
 void initWindow(sf::RenderWindow& window, MainData& windowData, bool firstTime)
 {
 	sf::VideoMode mode = sf::VideoMode::getDesktopMode();
@@ -507,8 +514,8 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 void renderRect(sf::RenderWindow& window, MainData& mainData, ScreenPos pos, ScreenPos end, sf::Color color)
 {
 	sf::RectangleShape rect;
-	rect.setPosition(pos.toVec2(mainData));
-	rect.setSize(end.toVec2(mainData) - pos.toVec2(mainData));
+	rect.setPosition(toVec2(pos, mainData));
+	rect.setSize(toVec2(end, mainData) - toVec2(pos, mainData));
 	rect.setFillColor(color);
 	window.draw(rect);
 }

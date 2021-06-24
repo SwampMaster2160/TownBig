@@ -88,6 +88,13 @@ int main()
     mainData.foliageDatas[(size_t)FoliageEnum::rockPile].texture = TextureID::rockPile;
     mainData.foliageDatas[(size_t)FoliageEnum::oakTree].texture = TextureID::oakTree;
 
+    // GUI
+
+    mainData.currentGUI = GUIEnum::ingame;
+
+    mainData.guis[(size_t)GUIEnum::ingame] = {};
+    mainData.guis[(size_t)GUIEnum::ingame].elements.push_back({ GUIElementEnum::rect, nullptr });
+
     // Map
 
     std::vector<sf::Vector2<uint8_t>> redrawTileQueue;

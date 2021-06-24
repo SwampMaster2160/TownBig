@@ -71,6 +71,91 @@ struct PosSize
 	}
 };
 
+enum class GUIEnum : uint8_t
+{
+	ingame, pause, title, size
+};
+
+enum class GUIElementEnum : uint8_t
+{
+	rect
+};
+
+struct GUIElement
+{
+	GUIElementEnum type;
+	void* element;
+
+	GUIElement()
+	{
+
+	}
+
+	GUIElement(GUIElementEnum type, void* element)
+	{
+		this->type = type;
+		this->element = element;
+	}
+};
+
+struct GUI
+{
+	std::vector<GUIElement> elements;
+
+	GUI()
+	{
+		elements = {};
+	}
+};
+
+enum class ScreenPosHAlign : uint8_t
+{
+	l, c, r
+};
+
+enum class ScreenPosVAlign : uint8_t
+{
+	t, c, b
+};
+
+struct ScreenPos
+{
+	sf::Vector2f pos;
+	ScreenPosHAlign hAlign;
+	ScreenPosVAlign vAlign;
+
+	ScreenPos()
+	{
+
+	}
+
+	ScreenPos(sf::Vector2f pos, ScreenPosHAlign hAlign, ScreenPosVAlign vAlign)
+	{
+		this->pos = pos;
+		this->hAlign = hAlign;
+		this->vAlign = vAlign;
+	}
+};
+
+struct GUIRect
+{
+	ScreenPos pos;
+	ScreenPos end;
+	sf::Color color;
+
+	GUIRect()
+	{
+
+	}
+
+	GUIRect(ScreenPos pos, ScreenPos end, sf::Color color)
+	{
+		this->pos = pos;
+		this->end = end;
+		this->color = color;
+	}
+};
+
 struct TextureData
 {
 	const char* name;
@@ -114,51 +199,6 @@ struct LandOcc
 {
 	LandOccEnum type;
 	char data;
-};
-
-enum class ScreenPosHAlign : uint8_t
-{
-	l, c, r
-};
-
-enum class ScreenPosVAlign : uint8_t
-{
-	t, c, b
-};
-
-struct MainData
-{
-	bool redrawMap;
-	sf::Vector2u windowedWindowSize;
-	sf::Vector2u windowSize;
-	uint16_t guiScale;
-	bool fullScreen;
-	std::vector<TriPoint> triangles;
-	std::vector<PosSize> freeTriangles;
-	std::vector<TextureData> textureDatas;
-	GroundMaterialData groundMaterialDatas[(uint8_t)GroundMaterialEnum::size];
-	FoliageData foliageDatas[(uint8_t)FoliageEnum::size];
-};
-
-struct ScreenPos
-{
-	sf::Vector2f pos;
-	ScreenPosHAlign hAlign;
-	ScreenPosVAlign vAlign;
-
-	ScreenPos(sf::Vector2f pos,	ScreenPosHAlign hAlign,	ScreenPosVAlign vAlign)
-	{
-		this->pos = pos;
-		this->hAlign = hAlign;
-		this->vAlign = vAlign;
-	}
-
-	sf::Vector2f toVec2(MainData& mainData)
-	{
-		float x = (uint8_t)hAlign * mainData.windowSize.x / 2. + pos.x * mainData.guiScale;
-		float y = (uint8_t)vAlign * mainData.windowSize.y / 2. + pos.y * mainData.guiScale;
-		return { x, y };
-	}
 };
 
 enum class Inputs : uint8_t
@@ -217,4 +257,20 @@ struct Map
 enum class MapTerrainType : uint8_t
 {
 	regular, flatGrass, flatWater, swamp
+};
+
+struct MainData
+{
+	bool redrawMap;
+	sf::Vector2u windowedWindowSize;
+	sf::Vector2u windowSize;
+	uint16_t guiScale;
+	bool fullScreen;
+	std::vector<TriPoint> triangles;
+	std::vector<PosSize> freeTriangles;
+	std::vector<TextureData> textureDatas;
+	GroundMaterialData groundMaterialDatas[(uint8_t)GroundMaterialEnum::size];
+	FoliageData foliageDatas[(uint8_t)FoliageEnum::size];
+	GUI guis[(size_t)GUIEnum::size];
+	GUIEnum currentGUI;
 };
