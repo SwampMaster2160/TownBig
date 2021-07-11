@@ -1,22 +1,9 @@
-﻿  data.cpp
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(158,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(159,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  main.cpp
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(158,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(159,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+﻿  main.cpp
 C:\Users\Jaxon\source\repos\TownBig\TownBig\main.cpp(57,87): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\main.cpp(238,64): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
-  other.cpp
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(158,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\types.hpp(159,11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(123,16): warning C4244: 'return': conversion from 'uint64_t' to 'uint8_t', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(417,8): warning C4244: 'argument': conversion from 'uint64_t' to 'unsigned int', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(433,16): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(434,17): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
-C:\Users\Jaxon\source\repos\TownBig\TownBig\other.cpp(435,17): warning C4244: 'initializing': conversion from 'double' to 'uint8_t', possible loss of data
+C:\Users\Jaxon\source\repos\TownBig\TownBig\main.cpp(271,79): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
   Generating code
-  86 of 671 functions (12.8%) were compiled, the rest were copied from previous compilation.
-    2 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  1 of 727 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   TownBig.vcxproj -> C:\Users\Jaxon\source\repos\TownBig\x64\Release\TownBig.exe

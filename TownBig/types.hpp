@@ -224,7 +224,7 @@ union Tile
 	}
 };
 
-struct TileRow
+/*struct TileRow
 {
 	Tile tiles[256];
 
@@ -237,21 +237,26 @@ struct TileRow
 	{
 		return tiles[x];
 	}
-};
+};*/
 
-struct Map
+struct Chunk
 {
-	TileRow tiles[256];
+	Tile tiles[0x10000];
+	bool redrawAll;
+	std::vector<sf::Vector2<uint8_t>> redrawQueue;
+	sf::Vector2<int64_t> pos;
+	std::vector<TriPoint> triangles;
+	std::vector<PosSize> freeTriangles;
 
-	Map()
+	Chunk()
 	{
 
 	}
 
-	TileRow& operator[] (size_t x)
+	/*TileRow& operator[] (size_t x)
 	{
 		return tiles[x];
-	}
+	}*/
 };
 
 enum class MapTerrainType : uint8_t
@@ -261,16 +266,17 @@ enum class MapTerrainType : uint8_t
 
 struct MainData
 {
-	bool redrawMap;
+	//bool redrawMap;
 	sf::Vector2u windowedWindowSize;
 	sf::Vector2u windowSize;
 	uint16_t guiScale;
 	bool fullScreen;
-	std::vector<TriPoint> triangles;
-	std::vector<PosSize> freeTriangles;
+	//std::vector<TriPoint> triangles;
+	//std::vector<PosSize> freeTriangles;
 	std::vector<TextureData> textureDatas;
 	GroundMaterialData groundMaterialDatas[(uint8_t)GroundMaterialEnum::size];
 	FoliageData foliageDatas[(uint8_t)FoliageEnum::size];
 	GUI guis[(size_t)GUIEnum::size];
 	GUIEnum currentGUI;
+	Chunk* chunks;
 };

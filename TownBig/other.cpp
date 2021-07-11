@@ -49,71 +49,72 @@ void initWindow(sf::RenderWindow& window, MainData& windowData, bool firstTime)
 	window.setActive(1);
 }
 
-PosSize appendTris(MainData& mainData, std::vector<TriPoint>& newTris)
+PosSize appendTris(MainData& mainData, std::vector<TriPoint>& newTris, Chunk& chunk)
 {
-	for (size_t x = 0; x < mainData.freeTriangles.size(); x++)
+	//std::cout << "a\n";
+	for (size_t x = 0; x < chunk.freeTriangles.size(); x++)
 	{
-		if (mainData.freeTriangles[x].size >= newTris.size())
+		if (chunk.freeTriangles[x].size >= newTris.size())
 		{
-			PosSize out = { mainData.freeTriangles[x].pos, newTris.size() };
-			memcpy(&mainData.triangles[mainData.freeTriangles[x].pos], &newTris[0], newTris.size() * sizeof(TriPoint));
-			mainData.freeTriangles[x].pos += newTris.size();
-			mainData.freeTriangles[x].size -= newTris.size();
+			PosSize out = { chunk.freeTriangles[x].pos, newTris.size() };
+ 			memcpy(&chunk.triangles[chunk.freeTriangles[x].pos], &newTris[0], newTris.size() * sizeof(TriPoint));
+			chunk.freeTriangles[x].pos += newTris.size();
+			chunk.freeTriangles[x].size -= newTris.size();
 
-			if (mainData.freeTriangles[x].size == 0)
+			if (chunk.freeTriangles[x].size == 0)
 			{
-				mainData.freeTriangles.erase(mainData.freeTriangles.begin() + x);
+				chunk.freeTriangles.erase(chunk.freeTriangles.begin() + x);
 			}
 
 			return out;
 		}
 	}
 
-	size_t triVectorSize = mainData.triangles.size();
-	mainData.triangles.resize(triVectorSize + newTris.size());
-	memcpy(&mainData.triangles[triVectorSize], &newTris[0], newTris.size() * sizeof(TriPoint));
+	size_t triVectorSize = chunk.triangles.size();
+	chunk.triangles.resize(triVectorSize + newTris.size());
+	memcpy(&chunk.triangles[triVectorSize], &newTris[0], newTris.size() * sizeof(TriPoint));
 	return { triVectorSize, newTris.size() };
 }
 
-void deleteTris(MainData& mainData, PosSize posSize)
+void deleteTris(MainData& mainData, PosSize posSize, Chunk& chunk)
 {
 	for (size_t x = posSize.pos; x < posSize.getEnd(); x++)
 	{
 		for (size_t y = 0; y < 3; y++)
 		{
-			mainData.triangles[x].doubles[y] = 0;
+			chunk.triangles[x].doubles[y] = 0;
 		}
 	}
-	mainData.freeTriangles.push_back(posSize);
+	chunk.freeTriangles.push_back(posSize);
 
-	for (size_t x = 0; x < mainData.freeTriangles.size(); x++)
+	for (size_t x = 0; x < chunk.freeTriangles.size(); x++)
 	{
-		if (posSize.pos == mainData.freeTriangles[x].getEnd())
+		if (posSize.pos == chunk.freeTriangles[x].getEnd())
 		{
-			mainData.freeTriangles[mainData.freeTriangles.size() - 1].pos -= mainData.freeTriangles[x].size;
-			mainData.freeTriangles[mainData.freeTriangles.size() - 1].size += mainData.freeTriangles[x].size;
-			mainData.freeTriangles.erase(mainData.freeTriangles.begin() + x);
+			chunk.freeTriangles[chunk.freeTriangles.size() - 1].pos -= chunk.freeTriangles[x].size;
+			chunk.freeTriangles[chunk.freeTriangles.size() - 1].size += chunk.freeTriangles[x].size;
+			chunk.freeTriangles.erase(chunk.freeTriangles.begin() + x);
 		}
 	}
 
-	for (size_t x = 0; x < mainData.freeTriangles.size(); x++)
+	for (size_t x = 0; x < chunk.freeTriangles.size(); x++)
 	{
-		if (posSize.getEnd() == mainData.freeTriangles[x].pos)
+		if (posSize.getEnd() == chunk.freeTriangles[x].pos)
 		{
-			mainData.freeTriangles[mainData.freeTriangles.size() - 1].size += mainData.freeTriangles[x].size;
-			mainData.freeTriangles.erase(mainData.freeTriangles.begin() + x);
+			chunk.freeTriangles[chunk.freeTriangles.size() - 1].size += chunk.freeTriangles[x].size;
+			chunk.freeTriangles.erase(chunk.freeTriangles.begin() + x);
 		}
 	}
 }
 
-void createQuad(sf::Vector3<double> pos0, sf::Vector3<double> pos1, sf::Vector3<double> pos2, sf::Vector3<double> pos3, std::vector<TriPoint>& newTris, TextureData& textureData)
+void createQuad(sf::Vector3<double> pos0, sf::Vector3<double> pos1, sf::Vector3<double> pos2, sf::Vector3<double> pos3, std::vector<TriPoint>& newTris, TextureData& textureData, Chunk& chunk)
 {
-	newTris.push_back({ pos0.x, pos0.y, pos0.z, textureData.xStart, textureData.yStart });
-	newTris.push_back({ pos1.x, pos1.y, pos1.z, textureData.xEnd,   textureData.yStart });
-	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd });
-	newTris.push_back({ pos0.x, pos0.y, pos0.z, textureData.xStart, textureData.yStart });
-	newTris.push_back({ pos3.x, pos3.y, pos3.z, textureData.xEnd,   textureData.yEnd });
-	newTris.push_back({ pos2.x, pos2.y, pos2.z, textureData.xStart, textureData.yEnd });
+	newTris.push_back({ pos0.x + chunk.pos.x * 256, pos0.y, pos0.z + chunk.pos.y * 256, textureData.xStart, textureData.yStart });
+	newTris.push_back({ pos1.x + chunk.pos.x * 256, pos1.y, pos1.z + chunk.pos.y * 256, textureData.xEnd,   textureData.yStart });
+	newTris.push_back({ pos3.x + chunk.pos.x * 256, pos3.y, pos3.z + chunk.pos.y * 256, textureData.xEnd,   textureData.yEnd });
+	newTris.push_back({ pos0.x + chunk.pos.x * 256, pos0.y, pos0.z + chunk.pos.y * 256, textureData.xStart, textureData.yStart });
+	newTris.push_back({ pos3.x + chunk.pos.x * 256, pos3.y, pos3.z + chunk.pos.y * 256, textureData.xEnd,   textureData.yEnd });
+	newTris.push_back({ pos2.x + chunk.pos.x * 256, pos2.y, pos2.z + chunk.pos.y * 256, textureData.xStart, textureData.yEnd });
 }
 
 bool isTileInMap(sf::Vector2<int16_t> pos)
@@ -153,11 +154,11 @@ double filter(sf::Vector2<double> pos, sf::Vector2<double> cPos, double size, do
 	return p2;
 }
 
-void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map)
+void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint64_t> pos, Chunk& chunk)
 {
-	if (!mainData.redrawMap)
+	if (!chunk.redrawAll)
 	{
-		deleteTris(mainData, tile.trisPosSize);
+		deleteTris(mainData, tile.trisPosSize, chunk);
 	}
 
 	// Get neighbors height
@@ -173,7 +174,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 
 			if (isTileInMap({ xMap, yMap }))
 			{
-				neighborHeights[x][y] = map[xMap][yMap].height;
+				neighborHeights[x][y] = chunk.tiles[xMap + yMap * 256].height;
 			}
 			else neighborHeights[x][y] = -128;
 		}
@@ -191,7 +192,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 		{ (double)pos.x + 1, (double)height, (double)pos.y },
 		{ (double)pos.x, (double)height, (double)pos.y + 1 },
 		{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
-		newTris, textureData);
+		newTris, textureData, chunk);
 
 	// Slopes
 
@@ -206,13 +207,13 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x + 1, (double)height + 1, (double)pos.y },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 			createQuad(
 				{ (double)pos.x, (double)height + 1, (double)pos.y },
 				{ (double)pos.x, (double)height + 1, (double)pos.y },
 				{ (double)pos.x, (double)height, (double)pos.y },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 		if (neighborHeights[2][1] == height + 1)
 		{
@@ -221,13 +222,13 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height, (double)pos.y },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 			createQuad(
 				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 0.9999 },
 				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 0.9999 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 0.9999 },
 				{ (double)pos.x, (double)height, (double)pos.y + 0.9999 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 		if (neighborHeights[1][2] == height + 1)
 		{
@@ -236,13 +237,13 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y },
 				{ (double)pos.x, (double)height, (double)pos.y },
-				newTris, textureData);
+				newTris, textureData, chunk);
 			createQuad(
 				{ (double)pos.x + 0.0001, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x + 0.0001, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x + 0.0001, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x + 0.0001, (double)height, (double)pos.y },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 		if (neighborHeights[0][1] == height + 1)
 		{
@@ -251,13 +252,13 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x, (double)height + 1, (double)pos.y },
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y },
-				newTris, textureData);
+				newTris, textureData, chunk);
 			createQuad(
 				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 
 		if (neighborHeights[0][0] == height + 1 && neighborHeights[0][1] == height && neighborHeights[1][0] == height)
@@ -267,7 +268,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x, (double)height + 1, (double)pos.y },
 				{ (double)pos.x + 1, (double)height, (double)pos.y },
 				{ (double)pos.x + 1, (double)height, (double)pos.y },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 		if (neighborHeights[2][0] == height + 1 && neighborHeights[1][0] == height && neighborHeights[2][1] == height)
 		{
@@ -276,7 +277,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x + 1, (double)height + 1, (double)pos.y },
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x + 1, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 		if (neighborHeights[2][2] == height + 1 && neighborHeights[2][1] == height && neighborHeights[1][2] == height)
 		{
@@ -285,7 +286,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 		if (neighborHeights[2][2] == height + 1 && neighborHeights[2][1] == height && neighborHeights[1][2] == height)
 		{
@@ -294,7 +295,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 				{ (double)pos.x + 1, (double)height + 1, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
 				{ (double)pos.x, (double)height, (double)pos.y + 1 },
-				newTris, textureData);
+				newTris, textureData, chunk);
 		}
 	}
 
@@ -307,7 +308,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 			{ (double)pos.x, (double)x, (double)pos.y + 1 },
 			{ (double)pos.x, (double)x - 1, (double)pos.y },
 			{ (double)pos.x, (double)x - 1, (double)pos.y + 1 },
-			newTris, textureData);
+			newTris, textureData, chunk);
 	}
 	for (int8_t x = neighborHeights[1][2]; x <= height; x++)
 	{
@@ -316,7 +317,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 			{ (double)pos.x + 1, (double)x, (double)pos.y + 1 },
 			{ (double)pos.x, (double)x - 1, (double)pos.y + 1 },
 			{ (double)pos.x + 1, (double)x - 1, (double)pos.y + 1 },
-			newTris, textureData);
+			newTris, textureData, chunk);
 	}
 
 	// Water
@@ -328,10 +329,10 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 			{ (double)pos.x + 1, -0.0625, (double)pos.y },
 			{ (double)pos.x, -0.0625, (double)pos.y + 1 },
 			{ (double)pos.x + 1, -0.0625, (double)pos.y + 1 },
-			newTris, mainData.textureDatas[(size_t)TextureID::water]);
+			newTris, mainData.textureDatas[(size_t)TextureID::water], chunk);
 	}
 
-	if (pos.x == 0)
+	/*if (pos.x == 0)
 	{
 		for (int8_t x = height + 1; x < 1; x++)
 		{
@@ -379,7 +380,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 					newTris, mainData.textureDatas[(size_t)TextureID::water]);
 			}
 		}
-	}
+	}*/
 
 	// Land Occ
 
@@ -393,7 +394,7 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 			{ (double)pos.x + 1, buildHeight + 1, (double)pos.y + 0.5 },
 			{ (double)pos.x, buildHeight, (double)pos.y + 0.5 },
 			{ (double)pos.x + 1, buildHeight, (double)pos.y + 0.5 },
-			newTris, mainData.textureDatas[(size_t)TextureID::debug]);
+			newTris, mainData.textureDatas[(size_t)TextureID::debug], chunk);
 		break;
 	}
 	case LandOccEnum::foliage:
@@ -404,14 +405,35 @@ void drawTile(MainData& mainData, Tile& tile, sf::Vector2<uint8_t> pos, Map& map
 			{ (double)pos.x + 1, buildHeight + 1, (double)pos.y + 0.5 },
 			{ (double)pos.x, buildHeight, (double)pos.y + 0.5 },
 			{ (double)pos.x + 1, buildHeight, (double)pos.y + 0.5 },
-			newTris, mainData.textureDatas[(size_t)(mainData.foliageDatas[*(uint8_t*)&tile.landOcc.data].texture)]);
+			newTris, mainData.textureDatas[(size_t)(mainData.foliageDatas[*(uint8_t*)&tile.landOcc.data].texture)], chunk);
 		break;
 	}
 	}
 
 	// End
 
-	tile.trisPosSize = appendTris(mainData, newTris);
+	tile.trisPosSize = appendTris(mainData, newTris, chunk);
+}
+
+void renderChunk(MainData& mainData, Chunk& chunk)
+{
+	if (chunk.redrawAll)
+	{
+		chunk.triangles = {};
+		chunk.freeTriangles = {};
+		uint8_t x = 255;
+		do
+		{
+			uint8_t y = 0;
+			do
+			{
+				drawTile(mainData, chunk.tiles[x + y * 256], { x, y }, chunk);
+				y++;
+			} while (y != 0);
+			x--;
+		} while (x != 255);
+		chunk.redrawAll = 0;
+	}
 }
 
 uint64_t getSystemTime()
@@ -419,10 +441,10 @@ uint64_t getSystemTime()
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, uint64_t seed)
+void generateMap(MainData& mainData, Chunk& chunk, MapTerrainType mapTerrainType, uint64_t seed)
 {
 	srand(seed);
-	mainData.redrawMap = 1;
+	chunk.redrawAll = 1;
 	uint8_t x = 0;
 	do
 	{
@@ -444,7 +466,7 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 				}
 
 				int8_t elevation1 = (int8_t)elevation;
-				map[x][y].height = elevation1;
+				chunk.tiles[x + y * 256].height = elevation1;
 
 				GroundMaterialEnum groundMaterial = GroundMaterialEnum::grass;
 
@@ -460,8 +482,8 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 				{
 					groundMaterial = GroundMaterialEnum::snow;
 				}
-				map[x][y].groundMaterial = groundMaterial;
-				map[x][y].landOcc.type = LandOccEnum::none;
+				chunk.tiles[x + y * 256].groundMaterial = groundMaterial;
+				chunk.tiles[x + y * 256].landOcc.type = LandOccEnum::none;
 				//random(seed, x1, y1, z)
 				/*if (random(seed, x, y, 10) == 0)
 				{
@@ -471,16 +493,16 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 				{
 					if (random(seed, x, y, 10) == 0)
 					{
-						map[x][y].landOcc.type = LandOccEnum::foliage;
-						*(FoliageEnum*)(&map[x][y].landOcc.data) = random(seed, x, y, 11) < 128 ? FoliageEnum::pineTree : FoliageEnum::oakTree;
+						chunk.tiles[x + y * 256].landOcc.type = LandOccEnum::foliage;
+						*(FoliageEnum*)(&chunk.tiles[x + y * 256].landOcc.data) = random(seed, x, y, 11) < 128 ? FoliageEnum::pineTree : FoliageEnum::oakTree;
 					}
 				}
 				if (elevation1 < 1 || elevation1 > 20 && elevation1 < 25)
 				{
 					if (random(seed, x, y, 10) == 0)
 					{
-						map[x][y].landOcc.type = LandOccEnum::foliage;
-						*(FoliageEnum*)(&map[x][y].landOcc.data) = FoliageEnum::rockPile;
+						chunk.tiles[x + y * 256].landOcc.type = LandOccEnum::foliage;
+						*(FoliageEnum*)(&chunk.tiles[x + y * 256].landOcc.data) = FoliageEnum::rockPile;
 					}
 				}
 
@@ -489,20 +511,20 @@ void generateMap(MainData& mainData, Map& map, MapTerrainType mapTerrainType, ui
 			case MapTerrainType::swamp:
 			{
 				bool height = rand() % 2;
-				map[x][y].groundMaterial = height ? GroundMaterialEnum::grass : GroundMaterialEnum::sand;
-				map[x][y].height = height - 1;
-				map[x][y].landOcc.type = LandOccEnum::none;
+				chunk.tiles[x + y * 256].groundMaterial = height ? GroundMaterialEnum::grass : GroundMaterialEnum::sand;
+				chunk.tiles[x + y * 256].height = height - 1;
+				chunk.tiles[x + y * 256].landOcc.type = LandOccEnum::none;
 				break;
 			}
 			case MapTerrainType::flatGrass:
-				map[x][y].groundMaterial = GroundMaterialEnum::grass;
-				map[x][y].height = 0;
-				map[x][y].landOcc.type = LandOccEnum::none;
+				chunk.tiles[x + y * 256].groundMaterial = GroundMaterialEnum::grass;
+				chunk.tiles[x + y * 256].height = 0;
+				chunk.tiles[x + y * 256].landOcc.type = LandOccEnum::none;
 				break;
 			case MapTerrainType::flatWater:
-				map[x][y].groundMaterial = GroundMaterialEnum::sand;
-				map[x][y].height = -1;
-				map[x][y].landOcc.type = LandOccEnum::none;
+				chunk.tiles[x + y * 256].groundMaterial = GroundMaterialEnum::sand;
+				chunk.tiles[x + y * 256].height = -1;
+				chunk.tiles[x + y * 256].landOcc.type = LandOccEnum::none;
 				break;
 			}
 			y++;

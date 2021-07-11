@@ -97,10 +97,19 @@ int main()
 
     // Map
 
-    std::vector<sf::Vector2<uint8_t>> redrawTileQueue;
-    Map& map = *(new Map);
+    //std::vector<sf::Vector2<uint64_t>> redrawTileQueue;
+    uint8_t chunkLayout[2][2];
+    for (uint8_t x = 0; x < 4; x++)
+    {
+        chunkLayout[x % 2][x / 2] = x;
+    }
+    mainData.chunks = new Chunk[4];
 
-    generateMap(mainData, map, MapTerrainType::regular, rand());
+    for (uint8_t x = 0; x < 4; x++)//4
+    {
+        generateMap(mainData, mainData.chunks[x], MapTerrainType::regular, rand());
+        mainData.chunks[x].pos = {x % 2, x / 2};
+    }
 
     // Main game loop
 
@@ -165,7 +174,7 @@ int main()
         if (inputs[(uint8_t)Inputs::zoomIn]) cameraZoom -= 1;
         if (inputs[(uint8_t)Inputs::zoomOut]) cameraZoom += 1;
         if (cameraZoom < 1) cameraZoom = 1;
-        if (cameraZoom > 7) cameraZoom = 7;
+        if (cameraZoom > 6) cameraZoom = 6;
 
         double cameraZoomD = pow(2., cameraZoom);
 
@@ -175,10 +184,10 @@ int main()
         {
             cameraPos += { ((double)mousePos.x / (double)windowSize.x - 0.5) * secondsPerFrame * 5 * cameraZoomD, ((double)mousePos.y / (double)windowSize.y - 0.5) * secondsPerFrame * 5 * cameraZoomD };
         }
-        if (cameraPos.x < 0) cameraPos.x = 0;
+        /*if (cameraPos.x < 0) cameraPos.x = 0;
         if (cameraPos.y < 0) cameraPos.y = 0;
         if (cameraPos.x > 256) cameraPos.x = 256;
-        if (cameraPos.y > 256) cameraPos.y = 256;
+        if (cameraPos.y > 256) cameraPos.y = 256;*/
 
         // Game logic
 
@@ -189,21 +198,27 @@ int main()
             redrawTileQueue.push_back(pos);
         }*/
 
-        if (inputs[(uint8_t)Inputs::f1]) generateMap(mainData, map, MapTerrainType::regular, rand());
-        if (inputs[(uint8_t)Inputs::f2]) generateMap(mainData, map, MapTerrainType::swamp, rand());
-        if (inputs[(uint8_t)Inputs::f3]) generateMap(mainData, map, MapTerrainType::flatGrass, rand());
-        if (inputs[(uint8_t)Inputs::f4]) generateMap(mainData, map, MapTerrainType::flatWater, rand());
+        if (inputs[(uint8_t)Inputs::f1]) generateMap(mainData, mainData.chunks[0], MapTerrainType::regular, rand());
+        if (inputs[(uint8_t)Inputs::f2]) generateMap(mainData, mainData.chunks[0], MapTerrainType::swamp, rand());
+        if (inputs[(uint8_t)Inputs::f3]) generateMap(mainData, mainData.chunks[0], MapTerrainType::flatGrass, rand());
+        if (inputs[(uint8_t)Inputs::f4]) generateMap(mainData, mainData.chunks[0], MapTerrainType::flatWater, rand());
 
         // Render
 
-        for (; redrawTileQueue.size() > 0;)
+        for (uint8_t x = 0; x < 4; x++)//4
         {
-            sf::Vector2<uint8_t> pos = redrawTileQueue[redrawTileQueue.size() - 1];
-            drawTile(mainData, map[pos.x][pos.y], pos, map);
-            redrawTileQueue.pop_back();
+            renderChunk(mainData, mainData.chunks[x]);//x
         }
 
-        if (mainData.redrawMap)
+        /*for (; mainData.chunks[0].redrawQueue.size() > 0;)
+        {
+            sf::Vector2<uint8_t> pos = mainData.chunks[0].redrawQueue[mainData.chunks[0].redrawQueue.size() - 1];
+            sf::Vector2<uint64_t> pos1 = {pos.x, pos.y};
+            drawTile(mainData, mainData.chunks[0].tiles[pos.x + pos.y * 256], pos1, mainData.chunks[0]);
+            mainData.chunks[0].redrawQueue.pop_back();
+        }
+
+        if (mainData.chunks[0].redrawAll)
         {
             mainData.triangles = {};
             mainData.freeTriangles = {};
@@ -213,13 +228,13 @@ int main()
                 uint8_t y = 0;
                 do
                 {
-                    drawTile(mainData, map[x][y], { x, y }, map);
+                    drawTile(mainData, mainData.chunks[0].tiles[x + y * 256], { x, y }, mainData.chunks[0]);
                     y++;
                 } while (y != 0);
                 x--;
             } while (x != 255);
-            mainData.redrawMap = 0;
-        }
+            mainData.chunks[0].redrawAll = 0;
+        }*/
 
         cameraZoomD = pow(2., -cameraZoom);
 
@@ -239,10 +254,22 @@ int main()
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        GLdouble* t1 = (GLdouble*)&mainData.triangles[0];
-        glVertexPointer(3, GL_DOUBLE, 8 * sizeof(GLdouble), t1);
-        glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(GLdouble), t1 + 4);
-        glDrawArrays(GL_TRIANGLES, 0, mainData.triangles.size());
+        /*if (1)//mainData.chunks[0].triangles.size() != 0
+        {
+            GLdouble* t1 = (GLdouble*)&mainData.chunks[0].triangles[0];
+            glVertexPointer(3, GL_DOUBLE, 8 * sizeof(GLdouble), t1);
+            glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(GLdouble), t1 + 4);
+            glDrawArrays(GL_TRIANGLES, 0, mainData.chunks[0].triangles.size());
+        }*/
+
+        for (uint8_t x = 0; x < 4; x++)//4
+        {
+            uint8_t x1 = chunkLayout[1 - (x % 2)][x / 2];
+            GLdouble* t1 = (GLdouble*)&mainData.chunks[x1].triangles[0];
+            glVertexPointer(3, GL_DOUBLE, 8 * sizeof(GLdouble), t1);
+            glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(GLdouble), t1 + 4);
+            glDrawArrays(GL_TRIANGLES, 0, mainData.chunks[x1].triangles.size());
+        }
 
         // GUI
 
@@ -261,6 +288,6 @@ int main()
         lastSystemTime = systemTime;
     }
 
-    delete &map;
+    delete[] mainData.chunks;
     return 0;
 }
